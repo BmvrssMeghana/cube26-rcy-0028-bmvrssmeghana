@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recovery Manager — CUBE Buildathon</title>
+  <meta name="description"
+    content="AI-powered FBA fee recovery agent. Analyse charges against upstream evidence and assemble defensible claims." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║            SIDEBAR NAV              ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">⚡</div>
+      <div>
+        <div class="logo-title">Recovery</div>
+        <div class="logo-sub">Manager</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item active" data-view="dashboard" onclick="showView('dashboard')">
+        <span class="nav-icon">◈</span> Dashboard
+      </a>
+      <a class="nav-item" data-view="charges" onclick="showView('charges')">
+        <span class="nav-icon">⊞</span> Charges
+      </a>
+      <a class="nav-item" data-view="claims" onclick="showView('claims')">
+        <span class="nav-icon">✦</span> Claims
+      </a>
+      <a class="nav-item" data-view="upload" onclick="showView('upload')">
+        <span class="nav-icon">↑</span> Upload
+      </a>
+      <a class="nav-item" data-view="policy" onclick="showView('policy')">
+        <span class="nav-icon">◉</span> SLA Policy
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="pipeline-badge">
+        <div class="pipeline-step done">01 Receiving</div>
+        <div class="pipeline-step done">02 Prep</div>
+        <div class="pipeline-step done">03 Pack</div>
+        <div class="pipeline-step done">04 Returns</div>
+        <div class="pipeline-step active">05 Recovery</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║             MAIN CONTENT            ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <main class="main-content" id="mainContent">
+
+    <!-- ── Top bar ── -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title" id="pageTitle">Dashboard</h1>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-theme" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">
+          <span id="themeIcon">☀️</span> <span id="themeText">Light</span>
+        </button>
+        <select class="org-selector" id="orgSelector" onchange="loadOrg()">
+          <option value="">All Organisations</option>
+        </select>
+        <button class="btn-primary" id="runBtn" onclick="runAnalysis()">
+          <span class="btn-icon">▷</span> Run Analysis
+        </button>
+      </div>
+    </header>
+
+    <!-- ── Dashboard View ── -->
+    <section class="view active" id="view-dashboard">
+      <div class="metrics-grid" id="metricsGrid">
+        <div class="metric-card" id="mc-total">
+          <div class="metric-icon">≡</div>
+          <div class="metric-value" id="m-total">—</div>
+          <div class="metric-label">Charges Evaluated</div>
+        </div>
+        <div class="metric-card contradicted" id="mc-claims">
+          <div class="metric-icon">⚑</div>
+          <div class="metric-value" id="m-claims">—</div>
+          <div class="metric-label">Claims Recommended</div>
+        </div>
+        <div class="metric-card value" id="mc-value">
+          <div class="metric-icon">$</div>
+          <div class="metric-value" id="m-value">—</div>
+          <div class="metric-label">Total Claim Value</div>
+        </div>
+        <div class="metric-card uncertain" id="mc-uncertain">
+          <div class="metric-icon">?</div>
+          <div class="metric-value" id="m-uncertain">—</div>
+          <div class="metric-label">Needs Review</div>
+        </div>
+        <div class="metric-card dup" id="mc-dup">
+          <div class="metric-icon">⊕</div>
+          <div class="metric-value" id="m-dup">—</div>
+          <div class="metric-label">Duplicate Flags</div>
+        </div>
+        <div class="metric-card silent" id="mc-silent">
+          <div class="metric-icon">○</div>
+          <div class="metric-value" id="m-silent">—</div>
+          <div class="metric-label">Insufficient Evidence</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">
+            <h2>Verdict Distribution</h2>
+          </div>
+          <div class="chart-area" id="verdictChart">
+            <div class="chart-placeholder">Run analysis to see results</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h2>Top Claimable Charges</h2>
+          </div>
+          <div class="top-claims-list" id="topClaimsList">
+            <div class="empty-state">No data yet</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:1.5rem;">
+        <div class="card-header">
+          <h2>Evidence Chain</h2>
+          <span class="card-sub">How Recovery Manager reads the pipeline</span>
+        </div>
+        <div class="chain-diagram">
+          <div class="chain-step">
+            <div class="chain-icon">📦</div>
+            <div class="chain-label">01 Receiving</div>
+            <div class="chain-desc">Identity · Quantity · Damage</div>
+          </div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-step">
+            <div class="chain-icon">🏷️</div>
+            <div class="chain-label">02 Prep</div>
+            <div class="chain-desc">Polybag · FNSKU · Compliance</div>
+          </div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-step">
+            <div class="chain-icon">📫</div>
+            <div class="chain-label">03 Pack</div>
+            <div class="chain-desc">Contents · Verdict</div>
+          </div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-step">
+            <div class="chain-icon">↩️</div>
+            <div class="chain-label">04 Returns</div>
+            <div class="chain-desc">Condition · Disposition</div>
+          </div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-step active-step">
+            <div class="chain-icon">⚡</div>
+            <div class="chain-label">05 Recovery</div>
+            <div class="chain-desc">Claim · Evidence · Verdict</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Charges View ── -->
+    <section class="view" id="view-charges">
+      <div class="filter-bar">
+        <input class="filter-input" id="chargeSearch" type="text" placeholder="Search by unit ID, SKU, charge type…"
+          oninput="filterTable()" />
+        <select class="filter-select" id="verdictFilter" onchange="filterTable()">
+          <option value="">All Verdicts</option>
+          <option value="CONTRADICTED">CONTRADICTED</option>
+          <option value="SUPPORTED">SUPPORTED</option>
+          <option value="SILENT">SILENT</option>
+          <option value="UNCERTAIN">UNCERTAIN</option>
+          <option value="PENDING_REVIEW">PENDING_REVIEW</option>
+        </select>
+        <select class="filter-select" id="chargeTypeFilter" onchange="filterTable()">
+          <option value="">All Charge Types</option>
+          <option value="inbound_defect_fee">Inbound Defect Fee</option>
+          <option value="lost_inbound">Lost Inbound</option>
+          <option value="damaged_in_warehouse">Damaged in Warehouse</option>
+          <option value="fulfilment_fee_weight_tier">Fulfilment Fee Weight</option>
+          <option value="refund_issued_item_not_returned">Refund — Item Not Returned</option>
+        </select>
+      </div>
+      <div class="table-wrapper">
+        <table class="data-table" id="chargesTable">
+          <thead>
+            <tr>
+              <th>Line ID</th>
+              <th>Unit ID</th>
+              <th>Charge Type</th>
+              <th>Amount</th>
+              <th>Posted</th>
+              <th>SLA Status</th>
+              <th>Verdict</th>
+              <th>Claim $</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="chargesBody">
+            <tr>
+              <td colspan="9" class="empty-cell">Run analysis to load charges</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Claims View ── -->
+    <section class="view" id="view-claims">
+      <div class="claims-summary-bar" id="claimsSummaryBar">
+        <span id="claimCount">— claims ready to file</span>
+      </div>
+      <div class="claims-grid" id="claimsGrid">
+        <div class="empty-state">Run analysis to see recommended claims</div>
+      </div>
+    </section>
+
+    <!-- ── Upload View ── -->
+    <section class="view" id="view-upload">
+      <div class="upload-panel">
+        <h2>Upload CSV Reports</h2>
+        <p class="upload-desc">Upload your fee/reimbursement report and any available upstream evidence files. The fee
+          report is required; all others are optional.</p>
+
+        <form id="uploadForm" onsubmit="submitUpload(event)">
+          <div class="upload-grid">
+            <div class="upload-zone" id="zone-fee">
+              <label for="file-fee">
+                <div class="upload-icon">📄</div>
+                <div class="upload-label">Fee / Reimbursement Report</div>
+                <div class="upload-hint">Required · CSV</div>
+                <input type="file" id="file-fee" name="fee_report" accept=".csv" required
+                  onchange="markZone('zone-fee', this)" />
+              </label>
+            </div>
+            <div class="upload-zone" id="zone-receiving">
+              <label for="file-receiving">
+                <div class="upload-icon">📦</div>
+                <div class="upload-label">Receiving Records</div>
+                <div class="upload-hint">Optional · CSV</div>
+                <input type="file" id="file-receiving" name="receiving" accept=".csv"
+                  onchange="markZone('zone-receiving', this)" />
+              </label>
+            </div>
+            <div class="upload-zone" id="zone-prep">
+              <label for="file-prep">
+                <div class="upload-icon">🏷️</div>
+                <div class="upload-label">Prep Records</div>
+                <div class="upload-hint">Optional · CSV</div>
+                <input type="file" id="file-prep" name="prep" accept=".csv" onchange="markZone('zone-prep', this)" />
+              </label>
+            </div>
+            <div class="upload-zone" id="zone-pack">
+              <label for="file-pack">
+                <div class="upload-icon">📫</div>
+                <div class="upload-label">Pack Records</div>
+                <div class="upload-hint">Optional · CSV</div>
+                <input type="file" id="file-pack" name="pack" accept=".csv" onchange="markZone('zone-pack', this)" />
+              </label>
+            </div>
+            <div class="upload-zone" id="zone-returns">
+              <label for="file-returns">
+                <div class="upload-icon">↩️</div>
+                <div class="upload-label">Returns Records</div>
+                <div class="upload-hint">Optional · CSV</div>
+                <input type="file" id="file-returns" name="returns" accept=".csv"
+                  onchange="markZone('zone-returns', this)" />
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary btn-large">
+            <span class="btn-icon">▷</span> Analyse Uploaded Reports
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ── SLA Policy View ── -->
+    <section class="view" id="view-policy">
+      <div class="card">
+        <div class="card-header">
+          <h2>Claim Filing Policy</h2>
+          <span class="card-sub">Source: Amazon Seller Central Reimbursement Policy · Retrieved 2026-09-26</span>
+        </div>
+        <div class="policy-note">
+          ⚠️ Claim windows were materially shortened on 23 October 2024. Verify all figures against the current official
+          Seller Central Help page before filing.
+        </div>
+        <div id="policyTable">Loading…</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║           CHARGE DETAIL MODAL       ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()" id="chargeModal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="modalTitle">Charge Detail</div>
+          <div class="modal-sub" id="modalSub"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- ── Loading overlay ── -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Analysing charges…</div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

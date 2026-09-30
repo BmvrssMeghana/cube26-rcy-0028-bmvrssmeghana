@@ -1,0 +1,4 @@
+record_id,unit_id,org_id,po_number,po_line,supplier,sku,asin,product_title,qty_ordered,qty_received,identity_match,carton_damage,unit_damage,quality_flags,photo_refs,operator_id,captured_at
+RCV-01,U-TEST-01,org_alpha,PO-101,1,Supplier A,SKU-CABLE,B00TEST01,USB Cable,10,10,yes,none,none,,fixtures/r1.jpg,op_1,2026-08-15T10:00:00Z
+RCV-02,U-TEST-02,org_alpha,PO-101,2,Supplier A,SKU-PUZZLE,B00TEST02,Puzzle 500,10,10,yes,none,none,,fixtures/r2.jpg,op_1,2026-08-15T11:00:00Z
+RCV-03,U-TEST-03,org_alpha,PO-102,1,Supplier B,SKU-LAMP,B00TEST03,LED Lamp,10,10,yes,none,none,,fixtures/r3.jpg,op_1,2026-08-16T09:00:00Z

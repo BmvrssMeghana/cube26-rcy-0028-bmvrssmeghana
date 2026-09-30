@@ -1,0 +1,4 @@
+record_id,unit_id,org_id,work_order_id,fba_shipment_id,sku,asin,fnsku,prep_price_usd,polybag_present_sealed,suffocation_warning,fnsku_label_placement,original_barcode_covered,photo_refs,operator_id,captured_at
+PRP-01,U-TEST-01,org_alpha,WO-1,FBA-SHIP-1,SKU-CABLE,B00TEST01,X00TEST01,0.40,yes,legible,flat,yes,fixtures/p1.jpg,op_1,2026-08-20T10:00:00Z
+PRP-02,U-TEST-02,org_alpha,WO-1,FBA-SHIP-1,SKU-PUZZLE,B00TEST02,X00TEST02,0.90,yes,legible,on_seam,yes,fixtures/p2.jpg,op_1,2026-08-20T11:00:00Z
+PRP-06A,U-TEST-06,org_alpha,WO-2,FBA-SHIP-2,SKU-CANDLE,B00TEST06,X00TEST06,0.40,not_required,not_required,flat,yes,fixtures/p6.jpg,op_1,2026-09-01T09:00:00Z
