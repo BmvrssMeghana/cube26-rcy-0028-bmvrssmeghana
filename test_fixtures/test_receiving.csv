@@ -1,4 +1,6 @@
 record_id,unit_id,org_id,po_number,po_line,supplier,sku,asin,product_title,qty_ordered,qty_received,identity_match,carton_damage,unit_damage,quality_flags,photo_refs,operator_id,captured_at
-RCV-01,U-TEST-01,org_alpha,PO-101,1,Supplier A,SKU-CABLE,B00TEST01,USB Cable,10,10,yes,none,none,,fixtures/r1.jpg,op_1,2026-08-15T10:00:00Z
-RCV-02,U-TEST-02,org_alpha,PO-101,2,Supplier A,SKU-PUZZLE,B00TEST02,Puzzle 500,10,10,yes,none,none,,fixtures/r2.jpg,op_1,2026-08-15T11:00:00Z
-RCV-03,U-TEST-03,org_alpha,PO-102,1,Supplier B,SKU-LAMP,B00TEST03,LED Lamp,10,10,yes,none,none,,fixtures/r3.jpg,op_1,2026-08-16T09:00:00Z
+RCV-01,U-DEMO-01,org_alpha,PO-1001,1,Supplier Alpha,SKU-CABLE-PRO,B00CABLE01,Pro USB-C Cable,50,50,yes,none,none,,fixtures/r1.jpg,op_201,2026-08-15T10:00:00Z
+RCV-03,U-DEMO-03,org_alpha,PO-1002,1,Supplier Beta,SKU-LAMP-LED,B00LAMP03,Desk LED Lamp,100,100,yes,none,none,,fixtures/r3.jpg,op_202,2026-08-16T09:00:00Z
+RCV-05,U-DEMO-05,org_alpha,PO-1003,1,Supplier Gamma,SKU-TOWEL-LUX,B00TOWEL05,Luxury Bath Towel,25,25,yes,none,none,,fixtures/r5.jpg,op_203,2026-08-18T14:00:00Z
+RCV-06,U-DEMO-06,org_alpha,PO-1003,2,Supplier Gamma,SKU-SPEAKER-BT,B00SPEAKER06,Bluetooth Speaker,20,20,yes,none,none,spec_variant=Standard;spec_components=1_piece,fixtures/r6.jpg,op_203,2026-08-18T15:00:00Z
+RCV-10,U-DEMO-10,org_alpha,PO-1004,1,Supplier Delta,SKU-MAT-YOGA,B00MAT10,Eco Yoga Mat,30,30,yes,none,none,,fixtures/r10.jpg,op_204,2026-08-10T10:00:00Z

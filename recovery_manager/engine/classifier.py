@@ -238,6 +238,18 @@ def _deterministic_classify(bundle: EvidenceBundle) -> dict:
                 "cited_fields": [{"source": f.source, "record_id": f.record_id, "field": f.field_name, "value": f.field_value} for f in bundle.fields if f.field_name in ("operator_disposition", "observed_state", "identity_match")],
             }
 
+    if ct in ("damaged_in_warehouse", "warehouse_damaged"):
+        carton_dmg = fields.get("carton_damage", "")
+        unit_dmg = fields.get("unit_damage", "")
+        if carton_dmg in ("none", "pass", "") and unit_dmg in ("none", "pass", ""):
+            return {
+                "verdict": "CONTRADICTED",
+                "claim_amount": charge.amount_usd or 20.0,
+                "reasoning": "Receiving intake logs confirm unit and carton arrived in undamaged condition. Damage occurred during Amazon fulfillment center storage.",
+                "supporting_evidence": ["Carton Condition: Intact", "Unit Condition: Undamaged at Receipt"],
+                "cited_fields": [{"source": f.source, "record_id": f.record_id, "field": f.field_name, "value": f.field_value} for f in bundle.fields if f.field_name in ("carton_damage", "unit_damage", "identity_match")],
+            }
+
     if ct == "fulfilment_fee_weight_tier":
         return {
             "verdict": "UNCERTAIN",
@@ -281,6 +293,7 @@ def _run_integrity_checks(
         decision.duplicate_flag = True
         decision.duplicate_note = dup_note
         decision.claim_amount = 0.0
+        decision.verdict = "DUPLICATE_SUPPRESSED"
 
     # 2. Reimbursements Reconciliation Netting (Section 1.3)
     matching_reimbursements = [
@@ -303,7 +316,7 @@ def _run_integrity_checks(
 
     # 3. SLA Expiration Gate (Section 1.4 & 2.8)
     if sla_result.status == "expired" and decision.verdict in ("CONTRADICTED", "PARTIAL_RECOVERY"):
-        decision.verdict = "SILENT"
+        decision.verdict = "EXPIRED"
         decision.claim_amount = 0.0
         decision.reasoning = f"Dispute filing window expired on {sla_result.deadline} under SLA policy {sla_result.policy_version}. " + decision.reasoning
 

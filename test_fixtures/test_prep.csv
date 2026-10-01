@@ -1,4 +1,6 @@
 record_id,unit_id,org_id,work_order_id,fba_shipment_id,sku,asin,fnsku,prep_price_usd,polybag_present_sealed,suffocation_warning,fnsku_label_placement,original_barcode_covered,photo_refs,operator_id,captured_at
-PRP-01,U-TEST-01,org_alpha,WO-1,FBA-SHIP-1,SKU-CABLE,B00TEST01,X00TEST01,0.40,yes,legible,flat,yes,fixtures/p1.jpg,op_1,2026-08-20T10:00:00Z
-PRP-02,U-TEST-02,org_alpha,WO-1,FBA-SHIP-1,SKU-PUZZLE,B00TEST02,X00TEST02,0.90,yes,legible,on_seam,yes,fixtures/p2.jpg,op_1,2026-08-20T11:00:00Z
-PRP-06A,U-TEST-06,org_alpha,WO-2,FBA-SHIP-2,SKU-CANDLE,B00TEST06,X00TEST06,0.40,not_required,not_required,flat,yes,fixtures/p6.jpg,op_1,2026-09-01T09:00:00Z
+PRP-01,U-DEMO-01,org_alpha,WO-101,FBA-SHIP-101,SKU-CABLE-PRO,B00CABLE01,X00CABLE01,0.40,yes,legible,flat,yes,fixtures/p1.jpg,op_101,2026-08-20T10:00:00Z
+PRP-02,U-DEMO-02,org_alpha,WO-101,FBA-SHIP-101,SKU-PUZZLE-500,B00PUZZLE02,X00PUZZLE02,0.90,yes,legible,on_seam,yes,fixtures/p2.jpg,op_101,2026-08-20T11:00:00Z
+PRP-08,U-DEMO-08,org_alpha,WO-103,FBA-SHIP-103,SKU-MUG-CERAMIC,B00MUG08,X00MUG08,0.50,yes,legible,flat,yes,fixtures/p8.jpg,op_103,2026-09-01T10:00:00Z
+PRP-09,U-DEMO-09,org_alpha,WO-104,FBA-SHIP-104,SKU-CANDLE-SOY,B00CANDLE09,X00CANDLE09,0.45,yes,legible,flat,yes,fixtures/p9.jpg,op_104,2026-09-01T09:00:00Z
+PRP-11,U-DEMO-11,org_alpha,WO-106,FBA-SHIP-106,SKU-ORGANIZER-DESK,B00DESK11,X00DESK11,0.60,yes,legible,flat,yes,fixtures/p11.jpg,op_106,2024-10-25T10:00:00Z
