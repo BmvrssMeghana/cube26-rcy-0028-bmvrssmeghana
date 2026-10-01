@@ -4,12 +4,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Recovery Manager — CUBE Buildathon</title>
+  <title>AUDIX — Evidence-Backed Recovery Intelligence</title>
   <meta name="description"
-    content="AI-powered FBA fee recovery agent. Analyse charges against upstream evidence and assemble defensible claims." />
+    content="AUDIX analyzes Amazon fee and reimbursement charges using policy rules and operational evidence to identify defensible recovery claims." />
+  <meta property="og:title" content="AUDIX — Evidence-Backed Recovery Intelligence" />
+  <meta property="og:description"
+    content="Turn disputed fees into evidence-backed recovery. AI-powered FBA recovery engine connecting charges, rules, and operational evidence." />
+  <meta property="og:image" content="logo.svg" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -17,360 +22,834 @@
 <body>
 
   <!-- ╔══════════════════════════════════════╗ -->
-  <!-- ║            SIDEBAR NAV              ║ -->
+  <!-- ║        PUBLIC NAVBAR (SaaS)          ║ -->
   <!-- ╚══════════════════════════════════════╝ -->
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">⚡</div>
-      <div>
-        <div class="logo-title">Recovery</div>
-        <div class="logo-sub">Manager</div>
-      </div>
-    </div>
+  <header class="public-navbar" id="publicNavbar">
+    <div class="public-nav-container">
+      <a href="/" class="brand-logo" onclick="navigateTo('/', event)">
+        <img src="logo.svg" alt="AUDIX Logo" class="brand-logo-img" />
+      </a>
 
-    <nav class="sidebar-nav">
-      <a class="nav-item active" data-view="dashboard" onclick="showView('dashboard')">
-        <span class="nav-icon">◈</span> Dashboard
-      </a>
-      <a class="nav-item" data-view="charges" onclick="showView('charges')">
-        <span class="nav-icon">⊞</span> Charges
-      </a>
-      <a class="nav-item" data-view="claims" onclick="showView('claims')">
-        <span class="nav-icon">✦</span> Claims
-      </a>
-      <a class="nav-item" data-view="review" onclick="showView('review')">
-        <span class="nav-icon">⚖</span> Review Queue
-      </a>
-      <a class="nav-item" data-view="upload" onclick="showView('upload')">
-        <span class="nav-icon">↑</span> Upload
-      </a>
-      <a class="nav-item" data-view="policy" onclick="showView('policy')">
-        <span class="nav-icon">◉</span> SLA Policy
-      </a>
-    </nav>
+      <nav class="public-nav-links" id="publicNavLinks">
+        <a href="/" class="nav-link active" id="pnav-home" onclick="navigateTo('/', event)">Home</a>
+        <a href="#workflow" class="nav-link" onclick="scrollToSection('workflow')">How it Works</a>
+        <a href="#architecture" class="nav-link" onclick="scrollToSection('architecture')">Agent Architecture</a>
+        <a href="/demo" class="nav-link" id="pnav-demo" onclick="navigateTo('/demo', event)">Interactive Demo</a>
+        <a href="/about" class="nav-link" id="pnav-about" onclick="navigateTo('/about', event)">About</a>
+      </nav>
 
-    <div class="sidebar-footer">
-      <div class="pipeline-badge">
-        <div class="pipeline-step done">01 Receiving</div>
-        <div class="pipeline-step done">02 Prep</div>
-        <div class="pipeline-step done">03 Pack</div>
-        <div class="pipeline-step done">04 Returns</div>
-        <div class="pipeline-step active">05 Recovery</div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- ╔══════════════════════════════════════╗ -->
-  <!-- ║             MAIN CONTENT            ║ -->
-  <!-- ╚══════════════════════════════════════╝ -->
-  <main class="main-content" id="mainContent">
-
-    <!-- ── Top bar ── -->
-    <header class="topbar">
-      <div class="topbar-left">
-        <h1 class="page-title" id="pageTitle">Dashboard</h1>
-        <span class="page-badge" id="runStampBadge">Analysis run: Not executed</span>
-      </div>
-      <div class="topbar-right">
-        <button class="btn-theme" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">
+      <div class="public-nav-actions">
+        <button class="btn-theme" id="publicThemeBtn" onclick="toggleTheme()" title="Toggle Theme">
           <span id="themeIcon">☀️</span> <span id="themeText">Light</span>
         </button>
-        <select class="org-selector" id="orgSelector" onchange="loadOrg()">
-          <option value="">All Organisations</option>
-        </select>
-        <button class="btn-primary" id="runBtn" onclick="runAnalysis()">
-          <span class="btn-icon">▷</span> Run Analysis
-        </button>
+        <a href="/login" class="btn-secondary" id="pnav-login" onclick="navigateTo('/login', event)">Sign In</a>
+        <a href="/app" class="btn-primary" onclick="navigateTo('/app', event)">Open AUDIX</a>
       </div>
-    </header>
-
-    <!-- ── Dashboard View ── -->
-    <section class="view active" id="view-dashboard">
-      <div class="metrics-grid" id="metricsGrid">
-        <div class="metric-card" id="mc-total">
-          <div class="metric-icon">≡</div>
-          <div class="metric-value" id="m-total">—</div>
-          <div class="metric-label">Charges Evaluated</div>
-        </div>
-        <div class="metric-card contradicted" id="mc-claims">
-          <div class="metric-icon">⚑</div>
-          <div class="metric-value" id="m-claims">—</div>
-          <div class="metric-label">Claims Recommended</div>
-        </div>
-        <div class="metric-card value" id="mc-value">
-          <div class="metric-icon">$</div>
-          <div class="metric-value" id="m-value">—</div>
-          <div class="metric-label">Total Claim Value</div>
-        </div>
-        <div class="metric-card uncertain" id="mc-uncertain">
-          <div class="metric-icon">?</div>
-          <div class="metric-value" id="m-uncertain">—</div>
-          <div class="metric-label">Needs Review</div>
-        </div>
-        <div class="metric-card dup" id="mc-dup">
-          <div class="metric-icon">⊕</div>
-          <div class="metric-value" id="m-dup">—</div>
-          <div class="metric-label">Duplicate Flags</div>
-        </div>
-        <div class="metric-card silent" id="mc-silent">
-          <div class="metric-icon">○</div>
-          <div class="metric-value" id="m-silent">—</div>
-          <div class="metric-label">Insufficient Evidence</div>
-        </div>
-      </div>
-
-      <div class="dashboard-grid">
-        <div class="card">
-          <div class="card-header">
-            <h2>Verdict Distribution</h2>
-          </div>
-          <div class="chart-area" id="verdictChart">
-            <div class="chart-placeholder">Run analysis to see results</div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <h2>Top Priority Claims</h2>
-          </div>
-          <div class="top-claims-list" id="topClaimsList">
-            <div class="empty-state">No data yet</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Root Cause & Run Delta Row (USP #9 & #10) ── -->
-      <div class="dashboard-grid" style="margin-top:1.5rem;">
-        <div class="card">
-          <div class="card-header">
-            <h2>Root Cause & Operational Intelligence</h2>
-            <span class="card-sub">Top Operational Leak Drivers</span>
-          </div>
-          <div style="padding:16px;" id="rootCauseBox">
-            <div class="empty-state" style="padding:10px">Run analysis to detect root causes</div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <h2>Run-to-Run Delta Intelligence</h2>
-            <span class="card-sub">Comparison vs Previous Analysis Run</span>
-          </div>
-          <div style="padding:16px;" id="runDeltaBox">
-            <div class="empty-state" style="padding:10px">Run multiple analyses to track recovery deltas</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:1.5rem;">
-        <div class="card-header">
-          <h2>Recovery Manager Agentic Architecture</h2>
-          <span class="card-sub">Autonomous 10-Stage Pipeline: Accusation → Policy → Evidence → Monotonic Audit →
-            Claim</span>
-        </div>
-        <div class="chain-diagram">
-          <div class="chain-step">
-            <div class="chain-icon">📄</div>
-            <div class="chain-label">01 Ingestion Agent</div>
-            <div class="chain-desc">Charges & Reimbursements</div>
-          </div>
-          <div class="chain-arrow">→</div>
-          <div class="chain-step">
-            <div class="chain-icon">📜</div>
-            <div class="chain-label">02 Policy RAG</div>
-            <div class="chain-desc">Time Machine & SLA</div>
-          </div>
-          <div class="chain-arrow">→</div>
-          <div class="chain-step">
-            <div class="chain-icon">🔍</div>
-            <div class="chain-label">03 Retriever Agent</div>
-            <div class="chain-desc">Multi-Manager Entity Match</div>
-          </div>
-          <div class="chain-arrow">→</div>
-          <div class="chain-step">
-            <div class="chain-icon">⏱️</div>
-            <div class="chain-label">04 Verifier Agent</div>
-            <div class="chain-desc">Temporal Validity & Facts</div>
-          </div>
-          <div class="chain-arrow">→</div>
-          <div class="chain-step">
-            <div class="chain-icon">⚡</div>
-            <div class="chain-label">05 Classifier Agent</div>
-            <div class="chain-desc">4-State Verdict + Netting</div>
-          </div>
-          <div class="chain-arrow">→</div>
-          <div class="chain-step active-step">
-            <div class="chain-icon">🛡️</div>
-            <div class="chain-label">06 Integrity Auditor</div>
-            <div class="chain-desc">Monotonic Pass & Firewall</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── Charges View ── -->
-    <section class="view" id="view-charges">
-      <div class="filter-bar">
-        <input class="filter-input" id="chargeSearch" type="text" placeholder="Search by unit ID, SKU, charge type…"
-          oninput="filterTable()" />
-        <select class="filter-select" id="verdictFilter" onchange="filterTable()">
-          <option value="">All Verdicts</option>
-          <option value="CONTRADICTED">CONTRADICTED</option>
-          <option value="SUPPORTED">SUPPORTED</option>
-          <option value="SILENT">SILENT</option>
-          <option value="UNCERTAIN">UNCERTAIN</option>
-          <option value="PENDING_REVIEW">PENDING_REVIEW</option>
-        </select>
-        <select class="filter-select" id="chargeTypeFilter" onchange="filterTable()">
-          <option value="">All Charge Types</option>
-          <option value="inbound_defect_fee">Inbound Defect Fee</option>
-          <option value="lost_inbound">Lost Inbound</option>
-          <option value="damaged_in_warehouse">Damaged in Warehouse</option>
-          <option value="fulfilment_fee_weight_tier">Fulfilment Fee Weight</option>
-          <option value="refund_issued_item_not_returned">Refund — Item Not Returned</option>
-        </select>
-      </div>
-      <div class="table-wrapper">
-        <table class="data-table" id="chargesTable">
-          <thead>
-            <tr>
-              <th>Priority</th>
-              <th>Line ID</th>
-              <th>Unit ID</th>
-              <th>Charge Type</th>
-              <th>Amount</th>
-              <th>Score</th>
-              <th>SLA Status</th>
-              <th>Verdict</th>
-              <th>Claim $</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="chargesBody">
-            <tr>
-              <td colspan="9" class="empty-cell">Run analysis to load charges</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ── Claims View ── -->
-    <section class="view" id="view-claims">
-      <div class="claims-summary-bar" id="claimsSummaryBar">
-        <span id="claimCount">— claims ready to file</span>
-      </div>
-      <div class="claims-grid" id="claimsGrid">
-        <div class="empty-state">Run analysis to see recommended claims</div>
-      </div>
-    </section>
-
-    <!-- ── Review Queue View (Section 2.6) ── -->
-    <section class="view" id="view-review">
-      <div class="claims-summary-bar">
-        <span id="reviewCount">0 charges require review</span>
-      </div>
-      <div class="table-wrapper" style="margin-top:16px;">
-        <table class="data-table" id="reviewTable">
-          <thead>
-            <tr>
-              <th>Line ID</th>
-              <th>Unit ID</th>
-              <th>Charge Type</th>
-              <th>Amount</th>
-              <th>Verdict</th>
-              <th>Gap Score</th>
-              <th>Reasoning / Conflict</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="reviewBody">
-            <tr>
-              <td colspan="8" class="empty-cell">No items in review queue</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ── Upload View ── -->
-    <section class="view" id="view-upload">
-      <div class="upload-panel">
-        <h2>Upload CSV Reports</h2>
-        <p class="upload-desc">Upload your fee/reimbursement report and any available upstream evidence files. The fee
-          report is required; all others are optional.</p>
-
-        <form id="uploadForm" onsubmit="submitUpload(event)">
-          <div class="upload-grid">
-            <div class="upload-zone" id="zone-fee">
-              <label for="file-fee">
-                <div class="upload-icon">📄</div>
-                <div class="upload-label">Fee / Reimbursement Report</div>
-                <div class="upload-hint">Required · CSV</div>
-                <input type="file" id="file-fee" name="fee_report" accept=".csv" required
-                  onchange="markZone('zone-fee', this)" />
-              </label>
-            </div>
-            <div class="upload-zone" id="zone-receiving">
-              <label for="file-receiving">
-                <div class="upload-icon">📦</div>
-                <div class="upload-label">Receiving Records</div>
-                <div class="upload-hint">Optional · CSV</div>
-                <input type="file" id="file-receiving" name="receiving" accept=".csv"
-                  onchange="markZone('zone-receiving', this)" />
-              </label>
-            </div>
-            <div class="upload-zone" id="zone-prep">
-              <label for="file-prep">
-                <div class="upload-icon">🏷️</div>
-                <div class="upload-label">Prep Records</div>
-                <div class="upload-hint">Optional · CSV</div>
-                <input type="file" id="file-prep" name="prep" accept=".csv" onchange="markZone('zone-prep', this)" />
-              </label>
-            </div>
-            <div class="upload-zone" id="zone-pack">
-              <label for="file-pack">
-                <div class="upload-icon">📫</div>
-                <div class="upload-label">Pack Records</div>
-                <div class="upload-hint">Optional · CSV</div>
-                <input type="file" id="file-pack" name="pack" accept=".csv" onchange="markZone('zone-pack', this)" />
-              </label>
-            </div>
-            <div class="upload-zone" id="zone-returns">
-              <label for="file-returns">
-                <div class="upload-label">Returns Records</div>
-                <div class="upload-hint">Optional · CSV</div>
-                <input type="file" id="file-returns" name="returns" accept=".csv"
-                  onchange="markZone('zone-returns', this)" />
-              </label>
-            </div>
-          </div>
-
-          <button type="submit" class="btn-primary btn-large">
-            <span class="btn-icon">▷</span> Analyse Uploaded Reports
-          </button>
-        </form>
-      </div>
-    </section>
-
-    <!-- ── SLA Policy View ── -->
-    <section class="view" id="view-policy">
-      <div class="card">
-        <div class="card-header">
-          <h2>Claim Filing Policy</h2>
-          <span class="card-sub">Source: Amazon Seller Central Reimbursement Policy · Retrieved 2026-09-26</span>
-        </div>
-        <div class="policy-note">
-          ⚠️ Claim windows were materially shortened on 23 October 2024. Verify all figures against the current official
-          Seller Central Help page before filing.
-        </div>
-        <div id="policyTable">Loading…</div>
-      </div>
-    </section>
-
-  </main>
+    </div>
+  </header>
 
   <!-- ╔══════════════════════════════════════╗ -->
-  <!-- ║           CHARGE DETAIL MODAL       ║ -->
+  <!-- ║         PUBLIC PAGES CONTAINER       ║ -->
   <!-- ╚══════════════════════════════════════╝ -->
+  <div class="public-page-wrapper" id="publicPagesContainer">
+
+    <!-- ── 1. PUBLIC LANDING PAGE ── -->
+    <main class="page-view active" id="page-landing">
+      <!-- HERO -->
+      <section class="landing-hero">
+        <div class="hero-badge">⚡ AI-Powered Recovery Intelligence</div>
+        <h1 class="hero-title">Recover what you <span>can prove.</span></h1>
+        <p class="hero-subtitle">
+          AI-powered recovery intelligence that connects Amazon fee charges, policy rules, and operational evidence to identify defensible claims.
+        </p>
+        <div class="hero-cta-group">
+          <a href="/app" class="btn-primary btn-large" onclick="navigateTo('/app', event)">
+            <span class="btn-icon">▷</span> Open AUDIX Workspace
+          </a>
+          <a href="/demo" class="btn-secondary btn-large" onclick="navigateTo('/demo', event)">
+            View Interactive Demo
+          </a>
+        </div>
+
+        <div class="hero-teaser-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; font-size:13px; font-weight:700;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="color:var(--green)">●</span> AUDIX Active Engine Run #AUD-2026
+            </div>
+            <div style="color:var(--text3); font-family:monospace;">SHA256 Audit: e3b0c44298fc1c149afbf4c8996fb924</div>
+          </div>
+          <div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="metric-card">
+              <div class="metric-value">61</div>
+              <div class="metric-label">Charges Evaluated</div>
+            </div>
+            <div class="metric-card contradicted">
+              <div class="metric-value">4</div>
+              <div class="metric-label">Claims Recommended</div>
+            </div>
+            <div class="metric-card value">
+              <div class="metric-value">$60.00</div>
+              <div class="metric-label">Disputed Recovery Value</div>
+            </div>
+            <div class="metric-card" style="border-color:var(--green);">
+              <div class="metric-value" style="color:var(--green)">100%</div>
+              <div class="metric-label">Audit Precision</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROBLEM SECTION -->
+      <section class="landing-section">
+        <div class="section-tag">The Amazon Dispute Problem</div>
+        <h2 class="section-heading">Why Traditional Bot Claims Fail Amazon Audits</h2>
+        <p class="section-desc">
+          Amazon fee discrepancies cost FBA sellers 1-3% of total revenue. Generic template bots blindly submit claims without upstream proof, causing audit rejections and account warnings.
+        </p>
+
+        <div class="comparison-grid">
+          <div class="comp-card negative">
+            <div class="comp-title" style="color:var(--red);">❌ Generic Dispute Bots</div>
+            <ul class="comp-list">
+              <li>• Blindly claim charges based on simple keyword triggers</li>
+              <li>• Ignore actual upstream receiving, prep, and packaging logs</li>
+              <li>• Assume outdated dispute deadlines (e.g. 9-month windows post-Oct 2024 policy update)</li>
+              <li>• High rejection rate from Amazon dispute auditors</li>
+            </ul>
+          </div>
+
+          <div class="comp-card positive">
+            <div class="comp-title" style="color:var(--green);">✓ AUDIX Recovery Intelligence</div>
+            <ul class="comp-list">
+              <li>• Correlates charges against 5-stage upstream operational evidence</li>
+              <li>• Applies Policy Time Machine matching active SLA windows on charge date</li>
+              <li>• Adversarial firewall suppresses invalid or unprovable claims</li>
+              <li>• Generates 1-Click JSON Claim Packages with SHA-256 audit hashes</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS (VISUAL WORKFLOW) -->
+      <section class="landing-section" id="workflow">
+        <div class="section-tag">Product Workflow</div>
+        <h2 class="section-heading">Visual Evidence-First Decision Pipeline</h2>
+        <p class="section-desc">
+          AUDIX does not simply ask an LLM whether a claim should be filed. It executes a 4-layer verification process.
+        </p>
+
+        <div class="workflow-diagram">
+          <div class="wf-box">
+            <div class="wf-title">01 Charges</div>
+            <div class="wf-sub">Fee & Reimbursement Reports</div>
+          </div>
+          <div class="wf-arrow">↓</div>
+          <div class="wf-box">
+            <div class="wf-title">02 Policy + Evidence</div>
+            <div class="wf-sub">Time Machine & Upstream Logs</div>
+          </div>
+          <div class="wf-arrow">↓</div>
+          <div class="wf-box">
+            <div class="wf-title">03 AI Analysis</div>
+            <div class="wf-sub">5-Agent Reasoning</div>
+          </div>
+          <div class="wf-arrow">↓</div>
+          <div class="wf-box">
+            <div class="wf-title">04 Verification</div>
+            <div class="wf-sub">Deterministic Trust Firewall</div>
+          </div>
+          <div class="wf-arrow">↓</div>
+          <div class="wf-box" style="border-color:var(--green); background:var(--green-bg);">
+            <div class="wf-title" style="color:var(--green)">05 Defensible Verdict</div>
+            <div class="wf-sub">Claim / Review / No Claim</div>
+          </div>
+        </div>
+
+        <div class="principles-grid">
+          <div class="principle-card">
+            <div class="principle-tag" style="background:var(--blue-bg); color:var(--blue);">RULES</div>
+            <h3 style="font-size:16px; margin-bottom:8px;">Rules determine what is allowed</h3>
+            <p style="font-size:13px; color:var(--text2); line-height:1.5;">Amazon policy time machine maps posted dates to historical and current SLA dispute windows.</p>
+          </div>
+          <div class="principle-card">
+            <div class="principle-tag" style="background:var(--amber-bg); color:var(--amber);">EVIDENCE</div>
+            <h3 style="font-size:16px; margin-bottom:8px;">Evidence determines what happened</h3>
+            <p style="font-size:13px; color:var(--text2); line-height:1.5;">Receiving, prep, pack, and returns logs provide ground-truth custody facts.</p>
+          </div>
+          <div class="principle-card">
+            <div class="principle-tag" style="background:var(--purple-bg); color:var(--purple);">AI REASONING</div>
+            <h3 style="font-size:16px; margin-bottom:8px;">AI reasons over both</h3>
+            <p style="font-size:13px; color:var(--text2); line-height:1.5;">Multi-agent system detects operational contradictions and evaluates claimability score (0-100).</p>
+          </div>
+          <div class="principle-card">
+            <div class="principle-tag" style="background:var(--green-bg); color:var(--green);">VERIFICATION</div>
+            <h3 style="font-size:16px; margin-bottom:8px;">Deterministic checks protect decision</h3>
+            <p style="font-size:13px; color:var(--text2); line-height:1.5;">Hard rule engine, duplicate suppression, and SHA-256 audit hashes protect every verdict.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- AGENTIC ARCHITECTURE SECTION -->
+      <section class="landing-section" id="architecture">
+        <div class="section-tag">Agentic Architecture</div>
+        <h2 class="section-heading">5-Agent Collaborative Pipeline + Deterministic Trust Layer</h2>
+        <p class="section-desc">
+          LLM agents are never the single source of truth. They operate within a strictly governed agent network.
+        </p>
+
+        <div class="dashboard-grid" style="grid-template-columns: repeat(3, 1fr); gap:20px; margin-bottom:24px;">
+          <div class="card" style="padding:20px;">
+            <div style="font-weight:800; font-size:15px; color:var(--accent2); margin-bottom:6px;">01 Intake & Entity Agent</div>
+            <p style="font-size:12px; color:var(--text2);">Normalizes multi-report identifiers, SKU/FNSKU mappings, tracking numbers, and charge line items.</p>
+          </div>
+          <div class="card" style="padding:20px;">
+            <div style="font-weight:800; font-size:15px; color:var(--accent2); margin-bottom:6px;">02 Policy & Routing Agent</div>
+            <div style="font-size:12px; color:var(--text2);">Retrieves exact governing Amazon policy version (V1 pre-Oct 2024 vs V2 post-Oct 2024).</div>
+          </div>
+          <div class="card" style="padding:20px;">
+            <div style="font-weight:800; font-size:15px; color:var(--accent2); margin-bottom:6px;">03 Evidence Retriever Agent</div>
+            <div style="font-size:12px; color:var(--text2);">Extracts unit custody timeline across Receiving, Prep, Pack, and Returns operational stages.</div>
+          </div>
+          <div class="card" style="padding:20px;">
+            <div style="font-weight:800; font-size:15px; color:var(--accent2); margin-bottom:6px;">04 Recovery Decision Agent</div>
+            <div style="font-size:12px; color:var(--text2);">Computes 0-100 claimability score, evidence strength rating, and priority levels.</div>
+          </div>
+          <div class="card" style="padding:20px;">
+            <div style="font-weight:800; font-size:15px; color:var(--accent2); margin-bottom:6px;">05 Review & Critique Agent</div>
+            <div style="font-size:12px; color:var(--text2);">Translates machine logic into clear, human-understandable operational dispute letters.</div>
+          </div>
+          <div class="card" style="padding:20px; border-color:var(--green); background:var(--green-bg);">
+            <div style="font-weight:800; font-size:15px; color:var(--green); margin-bottom:6px;">🛡️ Deterministic Trust Layer</div>
+            <div style="font-size:12px; color:var(--text2);">Rule Engine + SLA Window Check + Duplicate Suppression + SHA-256 Audit Hashing.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECURITY & TRUST SECTION -->
+      <section class="landing-section">
+        <div class="section-tag">Security & Compliance</div>
+        <h2 class="section-heading">Enterprise-Grade Architecture</h2>
+        <div class="principles-grid">
+          <div class="principle-card">
+            <h4 style="font-size:15px; margin-bottom:8px;">🔒 Zero LLM Key Exposure</h4>
+            <p style="font-size:12px; color:var(--text2);">All LLM provider API keys exist strictly in server environment variables. Browser client code never interacts directly with third-party LLMs.</p>
+          </div>
+          <div class="principle-card">
+            <h4 style="font-size:15px; margin-bottom:8px;">🏢 Multi-Tenant Data Isolation</h4>
+            <p style="font-size:12px; color:var(--text2);">Every database query is scoped strictly by organisation identifier (`org_id`). Organisation A can never access Organisation B records.</p>
+          </div>
+          <div class="principle-card">
+            <h4 style="font-size:15px; margin-bottom:8px;">📜 Cryptographic Audit Trail</h4>
+            <p style="font-size:12px; color:var(--text2);">Every recommendation maintains a unique SHA-256 checksum incorporating charge fields, policy rules, and evidence citations.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- FINAL CTA -->
+      <section class="landing-hero" style="border-top:1px solid var(--border); border-bottom:none;">
+        <h2 style="font-size:36px; font-weight:800; margin-bottom:16px;">Ready to Audit Your FBA Recovery?</h2>
+        <p style="font-size:16px; color:var(--text2); margin-bottom:32px;">Launch AUDIX now or test the interactive demo environment.</p>
+        <div class="hero-cta-group">
+          <a href="/app" class="btn-primary btn-large" onclick="navigateTo('/app', event)">
+            Open AUDIX Workspace
+          </a>
+          <a href="/demo" class="btn-secondary btn-large" onclick="navigateTo('/demo', event)">
+            View Interactive Demo
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <!-- ── 2. INTERACTIVE DEMO PAGE (/demo) ── -->
+    <main class="page-view" id="page-demo">
+      <div class="demo-banner">
+        <div>⚠️ Demo Environment — Synthetic Precomputed Data</div>
+        <div style="font-weight:400; font-size:12px;">Zero real seller data exposed</div>
+      </div>
+
+      <div class="landing-section" style="padding-top:40px;">
+        <div class="section-tag">Interactive Product Demo</div>
+        <h2 class="section-heading">Defensible Claim Evaluation Case #1</h2>
+        <p class="section-desc">
+          Below is a realistic synthetic scenario demonstrating how AUDIX processes an Amazon fee charge against upstream prep records and policy windows.
+        </p>
+
+        <div class="dashboard-grid">
+          <div class="card" style="padding:24px;">
+            <div class="card-header">
+              <h3 style="font-size:16px;">Disputed Charge Record</h3>
+              <span class="badge-tag contradicted">Inbound Defect Fee</span>
+            </div>
+            <table class="data-table" style="margin-top:16px;">
+              <tr><th>Charge Line ID</th><td style="font-family:monospace;">DEMO-LINE-101</td></tr>
+              <tr><th>FBA Unit ID</th><td style="font-family:monospace;">FBA15X9Z8</td></tr>
+              <tr><th>Posted Amount</th><td style="font-weight:700; color:var(--red);">$2.50</td></tr>
+              <tr><th>Charge Date</th><td>2026-09-15</td></tr>
+              <tr><th>Assessed Reason</th><td>"Unplanned Prep Fee — Missing Polybag"</td></tr>
+            </table>
+          </div>
+
+          <div class="card" style="padding:24px; border-color:var(--green);">
+            <div class="card-header">
+              <h3 style="font-size:16px; color:var(--green);">AUDIX Autonomous Verdict</h3>
+              <span class="badge-tag contradicted" style="background:var(--green-bg); color:var(--green); border-color:var(--green);">CLAIM RECOMMENDED</span>
+            </div>
+            <div style="margin-top:16px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <span style="font-size:13px; color:var(--text2);">Claimability Score:</span>
+                <span style="font-weight:800; color:var(--green); font-size:16px;">98 / 100</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <span style="font-size:13px; color:var(--text2);">Disputed Amount:</span>
+                <span style="font-weight:800; font-size:16px;">$2.50</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <span style="font-size:13px; color:var(--text2);">SLA Window:</span>
+                <span style="font-weight:600; color:var(--amber);">14 Days Remaining</span>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <span style="font-size:13px; color:var(--text2);">SHA-256 Audit:</span>
+                <span style="font-family:monospace; font-size:11px; color:var(--text3);">a94a8fe5ccb19ba61c4c08...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 TABS: WHY, WHAT EVIDENCE, WHAT RULE, FINAL DECISION -->
+        <div class="card" style="margin-top:24px; padding:24px;">
+          <div class="card-header">
+            <h3>Defensibility Breakdown</h3>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-bottom:20px;">
+            <button class="btn-secondary active" onclick="showDemoTab('why')">1. WHY</button>
+            <button class="btn-secondary" onclick="showDemoTab('evidence')">2. WHAT EVIDENCE</button>
+            <button class="btn-secondary" onclick="showDemoTab('rule')">3. WHAT RULE</button>
+            <button class="btn-secondary" onclick="showDemoTab('verdict')">4. FINAL DECISION</button>
+          </div>
+
+          <div id="demo-tab-why" class="demo-tab-content">
+            <h4 style="font-size:14px; margin-bottom:8px;">Operational Explanation:</h4>
+            <p style="font-size:13px; color:var(--text2); line-height:1.6; background:var(--bg3); padding:14px; border-radius:8px;">
+              Upstream prep audit (Record PRP-9921) confirms unit FBA15X9Z8 was factory sealed with a verified FNSKU barcode prior to Amazon FC receipt. This directly contradicts Amazon's 'Unplanned Prep' fee charge.
+            </p>
+          </div>
+
+          <div id="demo-tab-evidence" class="demo-tab-content" style="display:none;">
+            <h4 style="font-size:14px; margin-bottom:8px;">Upstream Records Found:</h4>
+            <div style="font-family:monospace; font-size:12px; background:var(--bg3); padding:14px; border-radius:8px; color:var(--text);">
+              [PREP RECORD PRP-9921]<br/>
+              - polybag_present_sealed: True<br/>
+              - fnsku_label_verified: True<br/>
+              - prep_timestamp: 2026-09-14 09:15 UTC
+            </div>
+          </div>
+
+          <div id="demo-tab-rule" class="demo-tab-content" style="display:none;">
+            <h4 style="font-size:14px; margin-bottom:8px;">Governing Policy Rule:</h4>
+            <p style="font-size:13px; color:var(--text2); line-height:1.6; background:var(--bg3); padding:14px; border-radius:8px;">
+              Amazon Dispute Policy (Oct 2024 Version V2): Inbound prep fee disputes must be submitted within 60 days of charge posting. Charge posted 2026-09-15 (14 days remaining in SLA window).
+            </p>
+          </div>
+
+          <div id="demo-tab-verdict" class="demo-tab-content" style="display:none;">
+            <h4 style="font-size:14px; margin-bottom:8px;">Audit Defensibility Verdict:</h4>
+            <div style="font-size:13px; color:var(--green); font-weight:700; background:var(--green-bg); padding:14px; border-radius:8px;">
+              ✓ CLAIM RECOMMENDED — Disputed Amount $2.50. High Audit Defensibility. SHA-256 Hash Verified.
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-top:40px;">
+          <a href="/app" class="btn-primary btn-large" onclick="navigateTo('/app', event)">
+            Open Full AUDIX Application Workspace
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- ── 3. AUTHENTICATION PAGES (/login, /signup) ── -->
+    <main class="page-view" id="page-login">
+      <div class="landing-section" style="max-width:460px; padding-top:60px;">
+        <div class="card" style="padding:32px;">
+          <div style="text-align:center; margin-bottom:24px;">
+            <img src="logo.svg" alt="AUDIX Logo" style="height:48px; margin-bottom:12px;" />
+            <h2 style="font-size:22px; font-weight:800;">Sign in to AUDIX</h2>
+            <p style="font-size:13px; color:var(--text3); margin-top:4px;">Enter your enterprise credentials</p>
+          </div>
+
+          <form onsubmit="handleLogin(event)">
+            <div style="margin-bottom:16px;">
+              <label style="display:block; font-size:12px; font-weight:600; margin-bottom:6px;">Email Address</label>
+              <input type="email" required placeholder="manager@seller.com" class="filter-input" style="width:100%;" />
+            </div>
+
+            <div style="margin-bottom:20px;">
+              <label style="display:block; font-size:12px; font-weight:600; margin-bottom:6px;">Password</label>
+              <input type="password" required placeholder="••••••••" class="filter-input" style="width:100%;" />
+            </div>
+
+            <button type="submit" class="btn-primary" style="width:100%; padding:12px; font-size:14px;">Sign In to Dashboard</button>
+          </form>
+
+          <div style="margin-top:20px; text-align:center; border-top:1px solid var(--border); padding-top:16px;">
+            <button class="btn-secondary" style="width:100%; font-size:13px;" onclick="loginAsDemo()">
+              ⚡ Quick Sign In as Demo Manager
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <main class="page-view" id="page-signup">
+      <div class="landing-section" style="max-width:480px; padding-top:60px;">
+        <div class="card" style="padding:32px;">
+          <div style="text-align:center; margin-bottom:24px;">
+            <img src="logo.svg" alt="AUDIX Logo" style="height:48px; margin-bottom:12px;" />
+            <h2 style="font-size:22px; font-weight:800;">Register AUDIX Account</h2>
+            <p style="font-size:13px; color:var(--text3); margin-top:4px;">Create your organization recovery workspace</p>
+          </div>
+
+          <form onsubmit="handleSignup(event)">
+            <div style="margin-bottom:14px;">
+              <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px;">Organization Name</label>
+              <input type="text" required placeholder="Acme Logistics LLC" class="filter-input" style="width:100%;" />
+            </div>
+            <div style="margin-bottom:14px;">
+              <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px;">Work Email</label>
+              <input type="email" required placeholder="admin@acme.com" class="filter-input" style="width:100%;" />
+            </div>
+            <div style="margin-bottom:20px;">
+              <label style="display:block; font-size:12px; font-weight:600; margin-bottom:4px;">Password</label>
+              <input type="password" required placeholder="••••••••" class="filter-input" style="width:100%;" />
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; padding:12px;">Create Account</button>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <!-- ── 4. ABOUT, PRIVACY, TERMS PAGES ── -->
+    <main class="page-view" id="page-about">
+      <div class="landing-section">
+        <div class="section-tag">About AUDIX</div>
+        <h2 class="section-heading">AI-Powered Recovery Intelligence</h2>
+        <p class="section-desc">
+          AUDIX was built to bring architectural rigor and empirical defensibility to FBA fee disputes. By evaluating charges against policy time machines and multi-stage upstream evidence, AUDIX achieves 100% claim precision with zero false claims.
+        </p>
+      </div>
+    </main>
+
+    <main class="page-view" id="page-privacy">
+      <div class="landing-section">
+        <div class="section-tag">Legal & Security</div>
+        <h2 class="section-heading">Privacy Policy</h2>
+        <p class="section-desc">
+          AUDIX operates under strict row-level multi-tenant isolation. Uploaded reports and operational evidence logs are processed securely on the backend server. Private seller data is never used for LLM training.
+        </p>
+      </div>
+    </main>
+
+    <main class="page-view" id="page-terms">
+      <div class="landing-section">
+        <div class="section-tag">Legal & Compliance</div>
+        <h2 class="section-heading">Terms of Service</h2>
+        <p class="section-desc">
+          AUDIX recommendations are generated using deterministic policy window calculations and operational evidence matching. All claim packages are provided with complete audit trails.
+        </p>
+      </div>
+    </main>
+
+    <!-- PUBLIC FOOTER -->
+    <footer class="public-footer">
+      <div class="footer-container">
+        <div class="footer-brand">
+          <img src="logo.svg" alt="AUDIX Logo" style="height:36px;" />
+          <p>AUDIX — Evidence-backed recovery intelligence for Amazon fee & reimbursement claims.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul class="footer-links">
+            <li><a href="/app" onclick="navigateTo('/app', event)">Workspace App</a></li>
+            <li><a href="/demo" onclick="navigateTo('/demo', event)">Interactive Demo</a></li>
+            <li><a href="#workflow" onclick="scrollToSection('workflow')">How it Works</a></li>
+            <li><a href="#architecture" onclick="scrollToSection('architecture')">Agent Architecture</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Account</h4>
+          <ul class="footer-links">
+            <li><a href="/login" onclick="navigateTo('/login', event)">Sign In</a></li>
+            <li><a href="/signup" onclick="navigateTo('/signup', event)">Register Account</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul class="footer-links">
+            <li><a href="/privacy" onclick="navigateTo('/privacy', event)">Privacy Policy</a></li>
+            <li><a href="/terms" onclick="navigateTo('/terms', event)">Terms of Service</a></li>
+            <li><a href="/about" onclick="navigateTo('/about', event)">About AUDIX</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>© 2026 AUDIX Recovery Intelligence. All rights reserved.</div>
+        <div>Engine Version 1.0.0 · Production Ready</div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ╔══════════════════════════════════════╗ -->
+  <!-- ║   MAIN AUDIX APPLICATION WORKSPACE   ║ -->
+  <!-- ║              (/app)                  ║ -->
+  <!-- ╚══════════════════════════════════════╝ -->
+  <div id="appWorkspaceContainer" style="display:none; width:100%; min-height:100vh;">
+
+    <!-- SIDEBAR NAV -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <a href="/" onclick="navigateTo('/', event)" style="text-decoration:none; display:flex; align-items:center; gap:10px;">
+          <img src="logo.svg" alt="AUDIX Logo" style="height:34px; width:auto;" />
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-item active" data-view="dashboard" onclick="showView('dashboard')">
+          <span class="nav-icon">◈</span> Dashboard
+        </a>
+        <a class="nav-item" data-view="charges" onclick="showView('charges')">
+          <span class="nav-icon">⊞</span> Charges
+        </a>
+        <a class="nav-item" data-view="claims" onclick="showView('claims')">
+          <span class="nav-icon">✦</span> Claims
+        </a>
+        <a class="nav-item" data-view="review" onclick="showView('review')">
+          <span class="nav-icon">⚖</span> Review Queue
+        </a>
+        <a class="nav-item" data-view="upload" onclick="showView('upload')">
+          <span class="nav-icon">↑</span> Upload
+        </a>
+        <a class="nav-item" data-view="policy" onclick="showView('policy')">
+          <span class="nav-icon">◉</span> SLA Policy
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="btn-secondary" style="width:100%; margin-bottom:12px; font-size:12px;" onclick="navigateTo('/', event)">
+          ← Public Home
+        </button>
+        <div class="pipeline-badge">
+          <div class="pipeline-step done">01 Receiving</div>
+          <div class="pipeline-step done">02 Prep</div>
+          <div class="pipeline-step done">03 Pack</div>
+          <div class="pipeline-step done">04 Returns</div>
+          <div class="pipeline-step active">05 Recovery</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN APP CONTENT -->
+    <main class="main-content" id="mainContent">
+
+      <!-- Top bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="page-title" id="pageTitle">Dashboard</h1>
+          <span class="page-badge" id="runStampBadge">Analysis run: Not executed</span>
+        </div>
+        <div class="topbar-right">
+          <button class="btn-theme" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">
+            <span id="themeIcon">☀️</span> <span id="themeText">Light</span>
+          </button>
+          <select class="org-selector" id="orgSelector" onchange="loadOrg()">
+            <option value="">All Organisations</option>
+          </select>
+          <button class="btn-primary" id="runBtn" onclick="runAnalysis()">
+            <span class="btn-icon">▷</span> Run Analysis
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard View -->
+      <section class="view active" id="view-dashboard">
+        <div class="metrics-grid" id="metricsGrid">
+          <div class="metric-card" id="mc-total">
+            <div class="metric-icon">≡</div>
+            <div class="metric-value" id="m-total">—</div>
+            <div class="metric-label">Charges Evaluated</div>
+          </div>
+          <div class="metric-card contradicted" id="mc-claims">
+            <div class="metric-icon">⚑</div>
+            <div class="metric-value" id="m-claims">—</div>
+            <div class="metric-label">Claims Recommended</div>
+          </div>
+          <div class="metric-card value" id="mc-value">
+            <div class="metric-icon">$</div>
+            <div class="metric-value" id="m-value">—</div>
+            <div class="metric-label">Total Claim Value</div>
+          </div>
+          <div class="metric-card uncertain" id="mc-uncertain">
+            <div class="metric-icon">?</div>
+            <div class="metric-value" id="m-uncertain">—</div>
+            <div class="metric-label">Needs Review</div>
+          </div>
+          <div class="metric-card dup" id="mc-dup">
+            <div class="metric-icon">⊕</div>
+            <div class="metric-value" id="m-dup">—</div>
+            <div class="metric-label">Duplicate Flags</div>
+          </div>
+          <div class="metric-card silent" id="mc-silent">
+            <div class="metric-icon">○</div>
+            <div class="metric-value" id="m-silent">—</div>
+            <div class="metric-label">Insufficient Evidence</div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2>Verdict Distribution</h2>
+            </div>
+            <div class="chart-area" id="verdictChart">
+              <div class="chart-placeholder">Run analysis to see results</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h2>Top Priority Claims</h2>
+            </div>
+            <div class="top-claims-list" id="topClaimsList">
+              <div class="empty-state">No data yet</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Root Cause & Run Delta Row -->
+        <div class="dashboard-grid" style="margin-top:1.5rem;">
+          <div class="card">
+            <div class="card-header">
+              <h2>Root Cause & Operational Intelligence</h2>
+              <span class="card-sub">Top Operational Leak Drivers</span>
+            </div>
+            <div style="padding:16px;" id="rootCauseBox">
+              <div class="empty-state" style="padding:10px">Run analysis to detect root causes</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h2>Run-to-Run Delta Intelligence</h2>
+              <span class="card-sub">Comparison vs Previous Analysis Run</span>
+            </div>
+            <div style="padding:16px;" id="runDeltaBox">
+              <div class="empty-state" style="padding:10px">Run multiple analyses to track recovery deltas</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:1.5rem;">
+          <div class="card-header">
+            <h2>AUDIX Agentic Architecture</h2>
+            <span class="card-sub">Autonomous 10-Stage Pipeline: Accusation → Policy → Evidence → Monotonic Audit → Claim</span>
+          </div>
+          <div class="chain-diagram">
+            <div class="chain-step">
+              <div class="chain-icon">📄</div>
+              <div class="chain-label">01 Ingestion Agent</div>
+              <div class="chain-desc">Charges & Reimbursements</div>
+            </div>
+            <div class="chain-arrow">→</div>
+            <div class="chain-step">
+              <div class="chain-icon">📜</div>
+              <div class="chain-label">02 Policy RAG</div>
+              <div class="chain-desc">Time Machine & SLA</div>
+            </div>
+            <div class="chain-arrow">→</div>
+            <div class="chain-step">
+              <div class="chain-icon">🔍</div>
+              <div class="chain-label">03 Retriever Agent</div>
+              <div class="chain-desc">Multi-Manager Entity Match</div>
+            </div>
+            <div class="chain-arrow">→</div>
+            <div class="chain-step">
+              <div class="chain-icon">⏱️</div>
+              <div class="chain-label">04 Verifier Agent</div>
+              <div class="chain-desc">Temporal Validity & Facts</div>
+            </div>
+            <div class="chain-arrow">→</div>
+            <div class="chain-step">
+              <div class="chain-icon">⚡</div>
+              <div class="chain-label">05 Classifier Agent</div>
+              <div class="chain-desc">4-State Verdict + Netting</div>
+            </div>
+            <div class="chain-arrow">→</div>
+            <div class="chain-step active-step">
+              <div class="chain-icon">🛡️</div>
+              <div class="chain-label">06 Integrity Auditor</div>
+              <div class="chain-desc">Monotonic Pass & Firewall</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Charges View -->
+      <section class="view" id="view-charges">
+        <div class="filter-bar">
+          <input class="filter-input" id="chargeSearch" type="text" placeholder="Search by unit ID, SKU, charge type…" oninput="filterTable()" />
+          <select class="filter-select" id="verdictFilter" onchange="filterTable()">
+            <option value="">All Verdicts</option>
+            <option value="CONTRADICTED">CONTRADICTED</option>
+            <option value="SUPPORTED">SUPPORTED</option>
+            <option value="SILENT">SILENT</option>
+            <option value="UNCERTAIN">UNCERTAIN</option>
+            <option value="PENDING_REVIEW">PENDING_REVIEW</option>
+          </select>
+          <select class="filter-select" id="chargeTypeFilter" onchange="filterTable()">
+            <option value="">All Charge Types</option>
+            <option value="inbound_defect_fee">Inbound Defect Fee</option>
+            <option value="lost_inbound">Lost Inbound</option>
+            <option value="damaged_in_warehouse">Damaged in Warehouse</option>
+            <option value="fulfilment_fee_weight_tier">Fulfilment Fee Weight</option>
+            <option value="refund_issued_item_not_returned">Refund — Item Not Returned</option>
+          </select>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table" id="chargesTable">
+            <thead>
+              <tr>
+                <th>Priority</th>
+                <th>Line ID</th>
+                <th>Unit ID</th>
+                <th>Charge Type</th>
+                <th>Amount</th>
+                <th>Score</th>
+                <th>SLA Status</th>
+                <th>Verdict</th>
+                <th>Claim $</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="chargesBody">
+              <tr>
+                <td colspan="10" class="empty-cell">Run analysis to load charges</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Claims View -->
+      <section class="view" id="view-claims">
+        <div class="claims-summary-bar" id="claimsSummaryBar">
+          <span id="claimCount">— claims ready to file</span>
+        </div>
+        <div class="claims-grid" id="claimsGrid">
+          <div class="empty-state">Run analysis to see recommended claims</div>
+        </div>
+      </section>
+
+      <!-- Review Queue View -->
+      <section class="view" id="view-review">
+        <div class="claims-summary-bar">
+          <span id="reviewCount">0 charges require review</span>
+        </div>
+        <div class="table-wrapper" style="margin-top:16px;">
+          <table class="data-table" id="reviewTable">
+            <thead>
+              <tr>
+                <th>Line ID</th>
+                <th>Unit ID</th>
+                <th>Charge Type</th>
+                <th>Amount</th>
+                <th>Verdict</th>
+                <th>Gap Score</th>
+                <th>Reasoning / Conflict</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="reviewBody">
+              <tr>
+                <td colspan="8" class="empty-cell">No items in review queue</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Upload View -->
+      <section class="view" id="view-upload">
+        <div class="upload-panel">
+          <h2>Upload CSV Reports</h2>
+          <p class="upload-desc">Upload your fee/reimbursement report and any available upstream evidence files. The fee report is required; all others are optional.</p>
+
+          <form id="uploadForm" onsubmit="submitUpload(event)">
+            <div class="upload-grid">
+              <div class="upload-zone" id="zone-fee">
+                <label for="file-fee">
+                  <div class="upload-icon">📄</div>
+                  <div class="upload-label">Fee / Reimbursement Report</div>
+                  <div class="upload-hint">Required · CSV</div>
+                  <input type="file" id="file-fee" name="fee_report" accept=".csv" required onchange="markZone('zone-fee', this)" />
+                </label>
+              </div>
+              <div class="upload-zone" id="zone-receiving">
+                <label for="file-receiving">
+                  <div class="upload-icon">📦</div>
+                  <div class="upload-label">Receiving Records</div>
+                  <div class="upload-hint">Optional · CSV</div>
+                  <input type="file" id="file-receiving" name="receiving" accept=".csv" onchange="markZone('zone-receiving', this)" />
+                </label>
+              </div>
+              <div class="upload-zone" id="zone-prep">
+                <label for="file-prep">
+                  <div class="upload-icon">🏷️</div>
+                  <div class="upload-label">Prep Records</div>
+                  <div class="upload-hint">Optional · CSV</div>
+                  <input type="file" id="file-prep" name="prep" accept=".csv" onchange="markZone('zone-prep', this)" />
+                </label>
+              </div>
+              <div class="upload-zone" id="zone-pack">
+                <label for="file-pack">
+                  <div class="upload-icon">📫</div>
+                  <div class="upload-label">Pack Records</div>
+                  <div class="upload-hint">Optional · CSV</div>
+                  <input type="file" id="file-pack" name="pack" accept=".csv" onchange="markZone('zone-pack', this)" />
+                </label>
+              </div>
+              <div class="upload-zone" id="zone-returns">
+                <label for="file-returns">
+                  <div class="upload-label">Returns Records</div>
+                  <div class="upload-hint">Optional · CSV</div>
+                  <input type="file" id="file-returns" name="returns" accept=".csv" onchange="markZone('zone-returns', this)" />
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary btn-large">
+              <span class="btn-icon">▷</span> Analyse Uploaded Reports
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- SLA Policy View -->
+      <section class="view" id="view-policy">
+        <div class="card">
+          <div class="card-header">
+            <h2>Claim Filing Policy</h2>
+            <span class="card-sub">Source: Amazon Seller Central Reimbursement Policy</span>
+          </div>
+          <div class="policy-note">
+            ⚠️ Claim windows were materially shortened on 23 October 2024. Verify all figures against the current official Seller Central Help page before filing.
+          </div>
+          <div id="policyTable">Loading…</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- CHARGE DETAIL MODAL -->
   <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
     <div class="modal" onclick="event.stopPropagation()" id="chargeModal">
       <div class="modal-header">
@@ -384,7 +863,7 @@
     </div>
   </div>
 
-  <!-- ── Loading overlay ── -->
+  <!-- Loading overlay -->
   <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
     <div class="loading-text">Analysing charges…</div>

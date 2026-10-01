@@ -1,8 +1,4 @@
-/* ─────────────────────────────────────────────────────────
-   Recovery Manager · Frontend JavaScript (v1.1 Agentic UI)
-   ───────────────────────────────────────────────────────── */
-
-const API = 'http://localhost:5000/api';
+const API = '/api';
 
 // ── State ────────────────────────────────────────────────
 let state = {
@@ -16,7 +12,85 @@ window.addEventListener('DOMContentLoaded', () => {
   initTheme();
   loadOrgs();
   loadPolicy();
+  routePage();
 });
+
+window.addEventListener('popstate', routePage);
+
+// ── Production SPA Routing ────────────────────────────────
+function routePage() {
+  const path = window.location.pathname.toLowerCase();
+  const hash = window.location.hash.toLowerCase();
+
+  const publicContainer = document.getElementById('publicPagesContainer');
+  const appContainer = document.getElementById('appWorkspaceContainer');
+  const navbar = document.getElementById('publicNavbar');
+
+  // Hide all page views
+  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+
+  if (path.startsWith('/app') || hash === '#app') {
+    publicContainer.style.display = 'none';
+    navbar.style.display = 'none';
+    appContainer.style.display = 'flex';
+    if (state.decisions.length === 0) {
+      runAnalysis();
+    }
+  } else {
+    appContainer.style.display = 'none';
+    publicContainer.style.display = 'flex';
+    navbar.style.display = 'flex';
+
+    let pageId = 'page-landing';
+    if (path.startsWith('/demo') || hash === '#demo') pageId = 'page-demo';
+    else if (path.startsWith('/login') || hash === '#login') pageId = 'page-login';
+    else if (path.startsWith('/signup') || hash === '#signup') pageId = 'page-signup';
+    else if (path.startsWith('/about') || hash === '#about') pageId = 'page-about';
+    else if (path.startsWith('/privacy') || hash === '#privacy') pageId = 'page-privacy';
+    else if (path.startsWith('/terms') || hash === '#terms') pageId = 'page-terms';
+
+    const target = document.getElementById(pageId);
+    if (target) target.classList.add('active');
+  }
+}
+
+function navigateTo(path, e) {
+  if (e) e.preventDefault();
+  window.history.pushState({}, '', path);
+  routePage();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function scrollToSection(id) {
+  if (window.location.pathname !== '/') {
+    window.history.pushState({}, '', '/');
+    routePage();
+  }
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+}
+
+function showDemoTab(tabName) {
+  document.querySelectorAll('.demo-tab-content').forEach(c => c.style.display = 'none');
+  const target = document.getElementById(`demo-tab-${tabName}`);
+  if (target) target.style.display = 'block';
+}
+
+function handleLogin(e) {
+  if (e) e.preventDefault();
+  navigateTo('/app');
+}
+
+function handleSignup(e) {
+  if (e) e.preventDefault();
+  navigateTo('/app');
+}
+
+function loginAsDemo() {
+  navigateTo('/app');
+}
 
 // ── Theme Switcher ───────────────────────────────────────
 function initTheme() {
@@ -34,12 +108,12 @@ function toggleTheme() {
 function applyTheme(theme) {
   if (theme === 'dark') {
     document.documentElement.setAttribute('data-theme', 'dark');
-    document.getElementById('themeIcon').textContent = '🌙';
-    document.getElementById('themeText').textContent = 'Dark';
+    document.querySelectorAll('#themeIcon').forEach(i => i.textContent = '🌙');
+    document.querySelectorAll('#themeText').forEach(t => t.textContent = 'Dark');
   } else {
     document.documentElement.removeAttribute('data-theme');
-    document.getElementById('themeIcon').textContent = '☀️';
-    document.getElementById('themeText').textContent = 'Light';
+    document.querySelectorAll('#themeIcon').forEach(i => i.textContent = '☀️');
+    document.querySelectorAll('#themeText').forEach(t => t.textContent = 'Light');
   }
 }
 
@@ -48,7 +122,8 @@ function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(`view-${name}`).classList.add('active');
-  document.querySelector(`[data-view="${name}"]`).classList.add('active');
+  const navEl = document.querySelector(`[data-view="${name}"]`);
+  if (navEl) navEl.classList.add('active');
 
   const titles = {
     dashboard: 'Dashboard',

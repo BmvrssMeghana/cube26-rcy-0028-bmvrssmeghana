@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Allow: /demo
+Allow: /about
+Allow: /privacy
+Allow: /terms
+
+Disallow: /api/
+Disallow: /app
+Disallow: /login
+Disallow: /signup
+Disallow: /api/run
+Disallow: /api/upload
+Disallow: /api/claim-package/
+Disallow: /api/review
+
+Sitemap: https://audix.app/sitemap.xml

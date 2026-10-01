@@ -28,13 +28,30 @@ DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
 UPSTREAM_DIR = DATA_DIR / "upstream"
 
 app = Flask(__name__, static_folder=str(UI_DIR), static_url_path="")
-CORS(app)
+
+# ── Security & CORS Configuration ──────────────────────────
+cors_origins = os.environ.get("CORS_ORIGINS", "*").split(",")
+CORS(app, origins=cors_origins)
+
+@app.after_request
+def add_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
 
 
-# ── UI ───────────────────────────────────────────────────
+# ── UI & Route Navigation ──────────────────────────────────
 
 @app.route("/")
-def index():
+@app.route("/app")
+@app.route("/demo")
+@app.route("/login")
+@app.route("/signup")
+@app.route("/about")
+@app.route("/privacy")
+@app.route("/terms")
+def index_routes():
     return send_from_directory(str(UI_DIR), "index.html")
 
 
@@ -46,8 +63,9 @@ def static_files(path):
     return send_from_directory(str(UI_DIR), "index.html")
 
 
-# ── Health ────────────────────────────────────────────────
+# ── Production Health Endpoint ────────────────────────────
 
+@app.route("/health")
 @app.route("/api/health")
 def health():
     db_status = "disabled"
@@ -60,7 +78,13 @@ def health():
     except Exception as e:
         db_status = f"error ({e})"
 
-    return jsonify({"status": "ok", "version": "1.0.0", "database": db_status})
+    return jsonify({
+        "status": "ok",
+        "version": "1.0.0",
+        "service": "AUDIX Recovery Intelligence",
+        "database": db_status
+    })
+
 
 
 @app.route("/api/db/init", methods=["POST", "GET"])
@@ -95,20 +119,60 @@ def run_sample():
         return jsonify({"error": str(e)}), 500
 
 
+# ── Public Demo API (Synthetic Data) ──────────────────────
+
+@app.route("/api/demo")
+def demo_data():
+    return jsonify({
+        "environment": "Demo Environment — Synthetic Data",
+        "is_synthetic_demo": True,
+        "sample_charge": {
+            "line_id": "DEMO-LINE-101",
+            "unit_id": "FBA15X9Z8",
+            "charge_type": "inbound_defect_fee",
+            "amount_usd": 2.50,
+            "posted_date": "2026-09-15",
+            "org_id": "DEMO_SELLER_ORG"
+        },
+        "verdict": "CLAIM",
+        "claim_amount": 2.50,
+        "claimability_score": 98,
+        "evidence_strength": "High",
+        "priority_level": "URGENT",
+        "reasoning": "Upstream prep audit (Record PRP-9921) confirms unit was factory sealed with verified FNSKU barcode prior to Amazon FC receipt. Contradicts Amazon 'Unplanned Prep' fee.",
+        "rule_applied": "Amazon Dispute Policy (Oct 2024 V2): 60-day dispute window active.",
+        "evidence_summary": "Prep Record PRP-9921: polybag_present_sealed=True, label_verified=True",
+        "custody_timeline": {
+            "receiving_timestamp": "2026-09-14 08:30 UTC",
+            "prep_timestamp": "2026-09-14 09:15 UTC",
+            "charge_timestamp": "2026-09-15 14:00 UTC",
+            "days_remaining_sla": 14
+        },
+        "sha256_hash": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
+    })
+
+
 # ── Upload ────────────────────────────────────────────────
 
 @app.route("/api/upload", methods=["POST"])
 def upload_and_run():
     def _read(key: str) -> str:
         f = request.files.get(key)
-        return f.read().decode("utf-8", errors="replace") if f else ""
+        if not f:
+            return ""
+        # Production File Upload Security Validation
+        filename = f.filename.lower() if f.filename else ""
+        if filename and not filename.endswith(('.csv', '.txt', '.tsv')):
+            raise ValueError(f"Invalid file format for {key!r}. Only CSV and TXT files are accepted.")
+        content = f.read(10 * 1024 * 1024) # 10MB safety limit
+        return content.decode("utf-8", errors="replace")
 
-    fee_text = _read("fee_report")
-    if not fee_text:
-        return jsonify({"error": "fee_report file is required"}), 400
-
-    org = request.form.get("org") or None
     try:
+        fee_text = _read("fee_report")
+        if not fee_text:
+            return jsonify({"error": "fee_report file is required (.csv format)"}), 400
+
+        org = request.form.get("org") or None
         result = run_from_text(
             fee_text=fee_text,
             receiving_text=_read("receiving"),
@@ -118,8 +182,11 @@ def upload_and_run():
             org_id_filter=org,
         )
         return jsonify(result)
+    except ValueError as ve:
+        return jsonify({"error": str(ve)}), 400
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Upload processing failed: {str(e)}"}), 500
+
 
 
 # ── Charge detail ─────────────────────────────────────────

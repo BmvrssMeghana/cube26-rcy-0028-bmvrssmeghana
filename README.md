@@ -1,321 +1,136 @@
-# Cube Buildathon · 05 · Recovery Manager
+# AUDIX — AI-Powered Recovery Intelligence
 
-**Commerce Context stream · Round 2 · Individual Build**
+**Evidence-backed recovery intelligence for Amazon fee & reimbursement claims.**
 
-> Five agents, one unit, one record that follows it.
-> A physical product arrives, gets prepped, gets shipped, comes back. At every step a person makes a fast judgment that nobody records. **You build the agent that makes one of those judgments, and leaves proof.**
+## Quick Start
 
-**New here? Read these first:**
+```bash
+# 1. Clone repository
+git clone https://github.com/BmvrssMeghana/cube26-rcy-0028-bmvrssmeghana.git
+cd cube26-rcy-0028-bmvrssmeghana
 
-1. [`GITHUB-GUIDE.md`](GITHUB-GUIDE.md) explains how to fork the repository, set it up, build and push your work.
-2. [`RULES.md`](RULES.md) covers the repository and engineering rules.
+# 2. Install dependencies
+pip install -r requirements.txt
 
----
+# 3. Copy environment config
+cp .env.example .env
+# Edit .env with your DATABASE_URL
 
-## Your problem statement: Recovery Manager
-
-|                              |                                                          |
-| ---------------------------- | -------------------------------------------------------- |
-| **Position in the chain**    | Step 5 of 5. Money back. This step has no camera.        |
-| **Customer**                 | Anyone being charged fees they do not owe                |
-| **What gets recorded**       | Claim filed                                              |
-| **Who consumes your output** | The seller, and whoever reviews the claim at the channel |
-
-Amazon charges inbound defect fees, loses units, damages inventory and mis-weighs parcels. Sellers are owed reimbursements they never claim, and charged fees they cannot contest, because contesting requires evidence and they have none. Today this is done by hand, by agencies taking a percentage, or not at all.
-
-**This is not a vision agent.** No camera, no capture surface. It reads the evidence records the other four Managers produce, matches them against channel fee and reimbursement reports, and assembles a claim.
-
-* Ingest a fee or reimbursement report and parse the charges
-* Match each charge to the unit evidence covering it
-* Decide whether the evidence contradicts the charge, supports it, or is insufficient
-* Assemble a disputable claim with evidence attached and a dollar figure
-* State explicitly what it cannot claim, and why
-
-> **Build against the official evidence contract.** Recovery depends on the evidence produced by the other four Managers. For Round 2, use the evidence contract provided by the organisers as the baseline rather than creating a separate cross-pod contract.
-
-> **Your eval is different.** Others measure a model against human labels on units. You measure claim correctness on charges, and you report precision, because a wrongly filed claim costs a seller standing with the channel while a missed one costs only money.
-
-### The chain you are part of
-
-```text
- Supplier delivery      Inbound to Amazon     Outbound to buyer     Customer return        Money back
- ┌──────────────┐      ┌──────────────┐      ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
- │ 01 Receiving │ ───▶ │ 02 Prep      │ ───▶ │ 03 Pack      │ ───▶ │ 04 Returns   │      │ 05 Recovery  │
- │ condition on │      │ compliance   │      │ contents at  │      │ condition &  │      │ reads all    │
- │ arrival      │      │ proof        │      │ seal         │      │ disposition  │      │ four → claim │
- └──────┬───────┘      └──────┬───────┘      └──────┬───────┘      └──────┬───────┘      └──────▲───────┘
-        └─────────────────────┴─────────────────────┴─────────────────────┴─────────────────────┘
+# 4. Start server
+python run.py
 ```
 
-The first four are the same machine: a camera, a model, and a decision bound to a record. What changes is the ruleset, the buyer and the moment. The fifth has no camera. It turns the other four's records into a claim.
-
-Your output has to be usable by another pod. That's deliberate, and it's scored.
-
----
-
-## Reference data
-
-`data/` holds a **dummy** CSV for reference while you design and build. Its columns and meanings are listed in [`data/README.md`](data/README.md).
-
-**The data is synthetic.** The SKUs, ASINs, FNSKUs, orders, suppliers, operators and amounts are all invented. The requirement flags and fee amounts are **not** Amazon's real rules or fees. Engineering rule 5 applies: look the authoritative rule up. The `photo_refs` paths are placeholders, and no images ship with this repo. Your fixtures and eval set are yours to capture.
-
-All five buildathon repos share the same `unit_id` values (`UNIT-0001` … `UNIT-0100`). You can follow one unit from receiving through recovery, the same way the real records will be joined. In the sample, each unit takes one route: **FBA** (prep, then Amazon ships it and charges fees) or **merchant-fulfilled / 3PL** (the seller packs it). So a unit has a Prep record or a Pack record, never both.
-
-Recovery also gets `data/upstream/`, a copy of the other four files, so you can practise the join before Round 3 integration.
+Open http://localhost:5000 → Public landing page  
+Open http://localhost:5000/app → AUDIX workspace dashboard
 
 ---
 
-## How this works
+## Product Structure
 
-You have a defined problem statement, supporting domain information and an engineering repository to build from. Understand the customer and operational workflow before writing code, then build and measure whether the solution works.
+| Route | Description |
+|-------|-------------|
+| `/` | Public landing page |
+| `/app` | AUDIX workspace (dashboard, charges, claims) |
+| `/demo` | Interactive synthetic demo |
+| `/login` | Sign in |
+| `/signup` | Register |
+| `/about` | About AUDIX |
+| `/privacy` | Privacy policy |
+| `/terms` | Terms of service |
 
-Your goal is to turn the Recovery Manager problem into a working, measurable agent.
+---
 
-### What you're given
+## Architecture
 
-* This problem statement
-* A domain brief covering the real economics, fee structures and what a working day in a warehouse looks like *(shared by the organisers)*
-* The engineering rules in [`RULES.md`](RULES.md)
-* Repository data and supporting resources
-* One fully worked package for Returns Manager (customer letter, PR/FAQ, one-pager) as a reference for the standard expected. **Read it. Don't copy it.**
-
-### What you produce
-
-Build your solution in **your own GitHub fork**.
-
-Your final Round 2 submission should include:
-
-* A working Recovery Manager
-* A `README.md` explaining your solution, setup, assumptions and limitations
-* An `ARCHITECTURE.md`
-* An eval report/results with numbers and named failure modes
-* A working demo/video
-* A deployment URL, where applicable
-* Your mandatory LinkedIn post URL
-
-## Build and submission flow
-
-```text
-Understand
-    ↓
-Build
-    ↓
-Test
-    ↓
-Evaluate
-    ↓
-Document
-    ↓
-Demo / Deploy
-    ↓
-Submit
+```
+Browser (Public Landing + /app Dashboard)
+   ↓
+Flask Backend (recovery_manager/api/app.py)
+   ↓
+Agent Pipeline (recovery_manager/engine/)
+  ├── ingestor.py        → Fee + upstream CSV parsing
+  ├── evidence_matcher.py → Upstream entity resolution  
+  ├── sla_engine.py      → Policy Time Machine (V1/V2)
+  ├── classifier.py      → 0-100 Claimability scoring
+  └── runner.py          → End-to-end orchestration
+   ↓
+PostgreSQL Database (recovery_manager/db/)
 ```
 
-Round 2 is an **individual build**.
+### Agent Roles
+1. **Intake & Entity Agent** — normalizes charge line IDs, SKU/FNSKU, org scoping
+2. **Policy RAG Agent** — selects V1 or V2 policy window by charge posted date
+3. **Evidence Retriever Agent** — matches upstream custody records (Receiving→Prep→Pack→Returns)
+4. **Recovery Decision Agent** — computes 0-100 claimability score + priority level
+5. **Review & Critique Agent** — generates human-readable dispute language
 
-The official build phase begins on **25 September 2026 at 9:00 AM IST**.
-
-Submissions open from **27 September 2026**.
-
-The final submission deadline is **1 October 2026 at 6:00 PM IST**.
-
-The submission form closes permanently at the deadline. **There is no resubmission.**
-
-All code commits forming your Round 2 submission must be made during the authorised build phase. Do not continue making Round 2 code changes after the build phase ends.
+**Deterministic Trust Layer**: Rule engine + SLA validation + duplicate suppression + SHA-256 audit hash
 
 ---
 
-## Evaluation
+## Environment Variables
 
-Recovery Manager is evaluated differently from the vision-based Managers.
+Copy `.env.example` to `.env`:
 
-The primary question is:
-
-> **When Recovery Manager recommends a claim, is that claim actually supported by the available evidence?**
-
-Your evaluation should focus on:
-
-* charge/report parsing,
-* charge-to-unit matching,
-* upstream evidence matching,
-* evidence interpretation,
-* claim correctness,
-* claim precision,
-* uncertainty/review handling,
-* false claims and missed recoverable claims,
-* important failure modes.
-
-Report the methodology clearly.
-
-### Primary metric
-
-```text
-Claim Precision
-=
-Correctly Supported Claims
---------------------------
-All Claims Recommended
+```
+PORT=5000
+DATABASE_URL=postgresql://user:pass@localhost:5432/recovery_db
+CORS_ORIGINS=http://localhost:5000
+JWT_SECRET=<change-in-production>
+LLM_API_KEY=<server-side-only-never-expose>
 ```
 
-Where measurable, also report:
-
-* total charges evaluated,
-* claims recommended,
-* correctly supported claims,
-* incorrectly recommended claims,
-* missed recoverable claims,
-* `UNCERTAIN` / review rate,
-* latency/cost where relevant.
+**NEVER** expose `LLM_API_KEY` in frontend code. All LLM calls are server-side only.
 
 ---
 
-## Round 2 Evaluation — 100 Points
+## Production Deployment
 
-| Criterion                                    |  Points |
-| -------------------------------------------- | ------: |
-| Problem Understanding & Solution Relevance   |  **15** |
-| Agent Functionality & Decision Quality       |  **25** |
-| Evaluation, Accuracy & Uncertainty Handling  |  **25** |
-| Evidence, Traceability & Engineering Quality |  **20** |
-| UX, Demo & Documentation                     |  **15** |
-| **TOTAL**                                    | **100** |
+### Backend (Render / Railway / Cloud Run)
 
-For Recovery Manager, the evaluation focus is on **claim correctness and evidence quality**, not image-level accuracy.
+```bash
+# Start command
+python run.py
 
----
-
-## Evidence and decision traceability
-
-Your Recovery Manager should make the claim traceable to the evidence that supports it.
-
-At minimum, the workflow should make it possible to understand:
-
-```text
-Charge
-   ↓
-Unit
-   ↓
-Upstream Evidence
-   ↓
-Evidence Interpretation
-   ↓
-Claim Decision
-   ↓
-Supporting Evidence
+# Health check endpoint
+GET /health
 ```
 
-Use the official evidence contract provided by the organisers as the baseline for interoperability.
-
-Do not create a separate negotiated evidence schema for Round 2.
-
----
-
-## PASS · FAIL · UNCERTAIN
-
-For upstream checks and evidence states:
-
-* **PASS** — the evidence supports the condition.
-* **FAIL** — the evidence shows the condition is not met.
-* **UNCERTAIN** — the evidence is insufficient for a reliable judgment.
-
-`UNCERTAIN` is not simply a low-confidence PASS.
-
-For Recovery, missing, contradictory or insufficient evidence should lead to an appropriate review/uncertain outcome rather than an unsupported claim.
+### Environment
+- Python 3.11+
+- PostgreSQL (managed recommended: Neon, Supabase, Railway)
+- Set `FLASK_DEBUG=false` in production
+- Set `CORS_ORIGINS=https://your-domain.com`
 
 ---
 
-## Engineering expectations
+## Security
 
-* **Tenancy isolation:** If you store persistent data, keep organisation/client data properly isolated.
-* **Batch model calls:** Avoid unnecessary repeated model calls.
-* **Fail open:** A model or dependency failure should not silently discard incoming information. Preserve the available information and move the case into an appropriate pending/review state.
-* **Authoritative rules:** Where an external rule is required, use the authoritative source rather than relying on model memory or synthetic sample values.
-* **Evidence traceability:** Preserve the records used to support recovery decisions.
-
----
-
-## What we're being straight with you about
-
-* **The core assumption is untested.** Nobody knows yet whether the evidence produced by automated upstream Managers will be reliable enough to support recovery claims at scale. Finding out that an assumption does not hold, and documenting that clearly, counts as a useful outcome.
-* **Nobody has spoken to a customer yet.** If you can get a real prep center or seller on a call, ask them to rank the five problems by urgency. Don't ask whether they'd buy what you're building.
-* **The background documents disagree in places.** A contradiction is a finding. Raise it as an Issue labelled `finding`.
+- ✅ CORS restricted by `CORS_ORIGINS` env var
+- ✅ Security headers: `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`
+- ✅ File upload validated: extension, MIME, 10MB limit
+- ✅ SHA-256 cryptographic audit on every decision
+- ✅ Multi-tenant `org_id` data isolation
+- ✅ No LLM API keys in frontend code
 
 ---
 
-## Submission
+## API Endpoints
 
-### Submissions open
-
-**27 September 2026**
-
-### Final deadline
-
-**1 October 2026 · 6:00 PM IST**
-
-The submission form closes permanently at the deadline.
-
-**There is no reopening and no resubmission.**
-
-Your final submission should include:
-
-* your GitHub fork,
-* working Recovery Manager,
-* `README.md`,
-* `ARCHITECTURE.md`,
-* evaluation results,
-* demo video,
-* deployment URL where applicable,
-* LinkedIn post URL.
-
-### LinkedIn — Mandatory
-
-Publish a LinkedIn post about your Round 2 build.
-
-The post must:
-
-* mention your Recovery Manager build,
-* explain what you built,
-* tag **CodeQuesters**,
-* tag **Sydon.AI**.
-
-Include the LinkedIn post URL in the submission form.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Production health check |
+| GET | `/api/run` | Run analysis on sample data |
+| POST | `/api/upload` | Upload CSVs and run analysis |
+| GET | `/api/policy` | SLA policy rules (V1/V2) |
+| GET | `/api/demo` | Synthetic demo response |
+| GET | `/api/orgs` | Available organisations |
+| GET | `/api/charge/<id>` | Charge detail + evidence |
+| GET | `/api/claim-package/<id>` | Claim package JSON |
+| POST | `/api/review` | Human override submission |
 
 ---
 
-## Commit rule
+## License
 
-All code commits forming your Round 2 submission must be made during the authorised build phase.
-
-Round 2 begins:
-
-**25 September 2026 · 9:00 AM IST**
-
-Once the build phase ends, do not continue making Round 2 code changes.
-
----
-
-## Round 2 → Round 3
-
-Round 2 is about your **individual Recovery Manager**.
-
-Participants selected for Round 3 will work in five-person Pods combining:
-
-```text
-Receiving Manager
-+
-Prep Manager
-+
-Pack Manager
-+
-Returns Manager
-+
-Recovery Manager
-```
-
-The objective is to integrate the five specialised agents into one connected end-to-end commerce system.
-
-Your Round 2 implementation should therefore have clear outputs, structured evidence and an understandable interface for downstream integration.
-
----
-
-*Cube Buildathon · Commerce Context*
+AUDIX is proprietary software — built for evidence-backed Amazon FBA recovery.
