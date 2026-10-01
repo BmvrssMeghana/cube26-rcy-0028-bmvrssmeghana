@@ -21,10 +21,10 @@
   --green: #0d9488;
   --green-bg: rgba(13, 148, 136, 0.12);
   --red: #e11d48;
-  --red-bg: rgba(225, 29, 72, 0.12);
+  --red-bg: rgba(224, 38, 78, 0.12);
   --amber: #d97706;
   --amber-bg: rgba(217, 119, 6, 0.12);
-  --blue: #2563eb;
+  --blue: #306ef3;
   --blue-bg: rgba(37, 99, 235, 0.12);
   --purple: #7c3aed;
   --purple-bg: rgba(124, 58, 237, 0.12);
@@ -328,6 +328,7 @@ body {
   background: var(--border);
   transform: translateY(-1px);
 }
+
 .org-selector {
   background: var(--bg3);
   border: 1px solid var(--border2);
@@ -1317,7 +1318,7 @@ body {
 
 .loading-text {
   font-size: 14px;
-  color: var(--text2);
+  color: white;
   letter-spacing: 0.3px;
 }
 

@@ -38,6 +38,9 @@
       <a class="nav-item" data-view="claims" onclick="showView('claims')">
         <span class="nav-icon">✦</span> Claims
       </a>
+      <a class="nav-item" data-view="review" onclick="showView('review')">
+        <span class="nav-icon">⚖</span> Review Queue
+      </a>
       <a class="nav-item" data-view="upload" onclick="showView('upload')">
         <span class="nav-icon">↑</span> Upload
       </a>
@@ -66,6 +69,7 @@
     <header class="topbar">
       <div class="topbar-left">
         <h1 class="page-title" id="pageTitle">Dashboard</h1>
+        <span class="page-badge" id="runStampBadge">Analysis run: Not executed</span>
       </div>
       <div class="topbar-right">
         <button class="btn-theme" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">
@@ -226,6 +230,32 @@
       </div>
       <div class="claims-grid" id="claimsGrid">
         <div class="empty-state">Run analysis to see recommended claims</div>
+      </div>
+    </section>
+
+    <!-- ── Review Queue View (Section 2.6) ── -->
+    <section class="view" id="view-review">
+      <div class="claims-summary-bar">
+        <span id="reviewCount">0 charges require human review</span>
+      </div>
+      <div class="table-wrapper" style="margin-top:16px;">
+        <table class="data-table" id="reviewTable">
+          <thead>
+            <tr>
+              <th>Line ID</th>
+              <th>Unit ID</th>
+              <th>Charge Type</th>
+              <th>Amount</th>
+              <th>Verdict</th>
+              <th>Gap Score</th>
+              <th>Reasoning / Conflict</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="reviewBody">
+            <tr><td colspan="8" class="empty-cell">No items in review queue</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 

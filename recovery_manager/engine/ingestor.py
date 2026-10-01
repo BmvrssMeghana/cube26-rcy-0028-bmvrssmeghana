@@ -1,7 +1,7 @@
 """
 Ingestor — Recovery Manager
 Loads fee/reimbursement report and all four upstream evidence sources.
-Normalises columns and builds a keyed index for join operations.
+Normalises columns and builds a keyed index for multi-granularity join operations.
 """
 
 import csv
@@ -23,18 +23,41 @@ UPSTREAM_DIR = DATA_DIR / "upstream"
 
 @dataclass
 class FeeCharge:
-    line_id: str
-    report_type: str
+    line_id: str               # charge_id
+    report_type: str           # fee_report | inventory_adjustment | reimbursement
     unit_id: str
     org_id: str
     sku: str
     fnsku: str
-    fba_shipment_id: str
-    order_id: str
+    fba_shipment_id: str       # shipment_id
+    order_id: str              # amazon_order_id
     charge_type: str
-    quantity: int
-    amount_usd: float
-    posted_date: str   # ISO date string
+    charge_subtype: str = ""
+    granularity: str = "unit"  # unit | shipment | order
+    quantity: int = 1
+    amount_usd: float = 0.0    # amount_total
+    posted_date: str = ""      # charged_at
+    asin: str = ""
+    description: str = ""
+
+
+@dataclass
+class ReimbursementRecord:
+    reimbursement_id: str
+    case_id: str | None
+    approval_date: str
+    amazon_order_id: str | None
+    sku: str | None
+    fnsku: str | None
+    asin: str | None
+    reason: str
+    condition: str | None
+    currency: str
+    amount_per_unit: float
+    amount_total: float
+    quantity_reimbursed_cash: int
+    quantity_reimbursed_inventory: int
+    original_reimbursement_id: str | None
 
 
 @dataclass
@@ -77,34 +100,81 @@ def _load_csv_from_text(text: str) -> list[dict]:
 # Parsing
 # ---------------------------------------------------------------------------
 
-def parse_fee_report(rows: list[dict]) -> list[FeeCharge]:
-    charges = []
+def parse_fee_report(rows: list[dict]) -> tuple[list[FeeCharge], list[ReimbursementRecord]]:
+    charges: list[FeeCharge] = []
+    reimbursements: list[ReimbursementRecord] = []
+
     for r in rows:
-        if not r.get("line_id"):
+        report_type = r.get("report_type", "fee_report")
+        
+        # Parse reimbursements schema A if present
+        if report_type == "reimbursement" or r.get("reimbursement_id"):
+            try:
+                amt_tot = float(r.get("amount_total", r.get("amount_usd", 0.0)) or 0.0)
+            except ValueError:
+                amt_tot = 0.0
+            reimbursements.append(ReimbursementRecord(
+                reimbursement_id=r.get("reimbursement_id", r.get("line_id", "")),
+                case_id=r.get("case_id"),
+                approval_date=r.get("approval_date", r.get("posted_date", "")),
+                amazon_order_id=r.get("amazon_order_id", r.get("order_id")),
+                sku=r.get("sku"),
+                fnsku=r.get("fnsku"),
+                asin=r.get("asin"),
+                reason=r.get("reason", r.get("charge_type", "reimbursement")),
+                condition=r.get("condition"),
+                currency=r.get("currency", "USD"),
+                amount_per_unit=float(r.get("amount_per_unit", amt_tot) or 0.0),
+                amount_total=amt_tot,
+                quantity_reimbursed_cash=int(r.get("quantity_reimbursed_cash", 1) or 1),
+                quantity_reimbursed_inventory=int(r.get("quantity_reimbursed_inventory", 0) or 0),
+                original_reimbursement_id=r.get("original_reimbursement_id"),
+            ))
             continue
+
+        # Parse charges schema B
+        line_id = r.get("line_id", r.get("charge_id", ""))
+        if not line_id:
+            continue
+
         try:
             qty = int(r.get("quantity", 1) or 1)
         except ValueError:
             qty = 1
         try:
-            amt = float(r.get("amount_usd", 0.0) or 0.0)
+            amt = float(r.get("amount_usd", r.get("amount_total", 0.0)) or 0.0)
         except ValueError:
             amt = 0.0
+
+        granularity = r.get("granularity", "unit")
+        if not granularity:
+            if r.get("fba_shipment_id") and not r.get("unit_id"):
+                granularity = "shipment"
+            elif r.get("order_id") and not r.get("unit_id"):
+                granularity = "order"
+            else:
+                granularity = "unit"
+
         charges.append(FeeCharge(
-            line_id=r.get("line_id", ""),
-            report_type=r.get("report_type", ""),
+            line_id=line_id,
+            report_type=report_type,
             unit_id=r.get("unit_id", ""),
             org_id=r.get("org_id", ""),
             sku=r.get("sku", ""),
             fnsku=r.get("fnsku", ""),
-            fba_shipment_id=r.get("fba_shipment_id", ""),
-            order_id=r.get("order_id", ""),
+            fba_shipment_id=r.get("fba_shipment_id", r.get("shipment_id", "")),
+            order_id=r.get("order_id", r.get("amazon_order_id", "")),
             charge_type=r.get("charge_type", ""),
+            charge_subtype=r.get("charge_subtype", ""),
+            granularity=granularity,
             quantity=qty,
             amount_usd=amt,
-            posted_date=r.get("posted_date", ""),
+            posted_date=r.get("posted_date", r.get("charged_at", "")),
+            asin=r.get("asin", ""),
+            description=r.get("description", ""),
         ))
-    return charges
+
+    return charges, reimbursements
 
 
 def build_upstream_index(
@@ -113,33 +183,35 @@ def build_upstream_index(
     pack_rows: list[dict],
     returns_rows: list[dict],
 ) -> dict[str, UpstreamBundle]:
-    """Build a unit_id → UpstreamBundle map."""
+    """
+    Build a multi-key index mapping unit_id, shipment_id, order_id, or sku → UpstreamBundle.
+    """
     index: dict[str, UpstreamBundle] = {}
 
-    def _ensure(uid: str, org: str) -> UpstreamBundle:
-        if uid not in index:
-            index[uid] = UpstreamBundle(unit_id=uid, org_id=org)
-        return index[uid]
+    def _ensure(key: str, org: str) -> UpstreamBundle:
+        if key not in index:
+            index[key] = UpstreamBundle(unit_id=key, org_id=org)
+        return index[key]
 
     for r in receiving_rows:
-        uid = r.get("unit_id", "")
-        if uid:
-            _ensure(uid, r.get("org_id", "")).receiving.append(r)
+        keys = filter(None, [r.get("unit_id"), r.get("fba_shipment_id"), r.get("shipment_id"), r.get("po_number"), r.get("sku")])
+        for k in keys:
+            _ensure(k, r.get("org_id", "")).receiving.append(r)
 
     for r in prep_rows:
-        uid = r.get("unit_id", "")
-        if uid:
-            _ensure(uid, r.get("org_id", "")).prep.append(r)
+        keys = filter(None, [r.get("unit_id"), r.get("fba_shipment_id"), r.get("shipment_id"), r.get("work_order_id"), r.get("sku")])
+        for k in keys:
+            _ensure(k, r.get("org_id", "")).prep.append(r)
 
     for r in pack_rows:
-        uid = r.get("unit_id", "")
-        if uid:
-            _ensure(uid, r.get("org_id", "")).pack.append(r)
+        keys = filter(None, [r.get("unit_id"), r.get("outbound_shipment_id"), r.get("order_id"), r.get("sku")])
+        for k in keys:
+            _ensure(k, r.get("org_id", "")).pack.append(r)
 
     for r in returns_rows:
-        uid = r.get("unit_id", "")
-        if uid:
-            _ensure(uid, r.get("org_id", "")).returns.append(r)
+        keys = filter(None, [r.get("unit_id"), r.get("order_id"), r.get("ordered_sku"), r.get("sku")])
+        for k in keys:
+            _ensure(k, r.get("org_id", "")).returns.append(r)
 
     return index
 
@@ -154,17 +226,17 @@ def load_from_files(
     prep_path: Path | None = None,
     pack_path: Path | None = None,
     returns_path: Path | None = None,
-) -> tuple[list[FeeCharge], dict[str, UpstreamBundle]]:
-    """Load everything from disk and return charges + upstream index."""
+) -> tuple[list[FeeCharge], list[ReimbursementRecord], dict[str, UpstreamBundle]]:
+    """Load everything from disk and return charges + reimbursements + upstream index."""
     fee_rows = _load_csv(fee_path or DATA_DIR / "fee_report_sample.csv")
     rcv_rows = _load_csv(receiving_path or UPSTREAM_DIR / "receiving_sample.csv")
     prp_rows = _load_csv(prep_path or UPSTREAM_DIR / "prep_sample.csv")
     pck_rows = _load_csv(pack_path or UPSTREAM_DIR / "pack_sample.csv")
     rtn_rows = _load_csv(returns_path or UPSTREAM_DIR / "returns_sample.csv")
 
-    charges = parse_fee_report(fee_rows)
+    charges, reimbursements = parse_fee_report(fee_rows)
     upstream_index = build_upstream_index(rcv_rows, prp_rows, pck_rows, rtn_rows)
-    return charges, upstream_index
+    return charges, reimbursements, upstream_index
 
 
 def load_from_text(
@@ -173,14 +245,14 @@ def load_from_text(
     prep_text: str = "",
     pack_text: str = "",
     returns_text: str = "",
-) -> tuple[list[FeeCharge], dict[str, UpstreamBundle]]:
-    """Parse from in-memory CSV strings (used by the API upload endpoint)."""
+) -> tuple[list[FeeCharge], list[ReimbursementRecord], dict[str, UpstreamBundle]]:
+    """Parse from in-memory CSV strings."""
     fee_rows = _load_csv_from_text(fee_text) if fee_text else []
     rcv_rows = _load_csv_from_text(receiving_text) if receiving_text else []
     prp_rows = _load_csv_from_text(prep_text) if prep_text else []
     pck_rows = _load_csv_from_text(pack_text) if pack_text else []
     rtn_rows = _load_csv_from_text(returns_text) if returns_text else []
 
-    charges = parse_fee_report(fee_rows)
+    charges, reimbursements = parse_fee_report(fee_rows)
     upstream_index = build_upstream_index(rcv_rows, prp_rows, pck_rows, rtn_rows)
-    return charges, upstream_index
+    return charges, reimbursements, upstream_index

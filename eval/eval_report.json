@@ -19,7 +19,8 @@
       "amount_usd": 2.5,
       "verdict": "CONTRADICTED",
       "claim_amount": 2.5,
-      "reasoning": "Prep records show compliant preparation. Inbound defect fee appears disputable.",
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "Prep records show compliant preparation. Inbound defect charge appears disputable.",
       "supporting_evidence": [
         "polybag_present_sealed=yes",
         "suffocation_warning=legible",
@@ -49,12 +50,80 @@
         "status": "open",
         "deadline": "2026-11-09",
         "earliest_filing": "2026-09-10",
-        "days_remaining": 40,
-        "policy_note": "Amazon posts ~6 weeks after shipment check-in; 60-day dispute window from posting date"
+        "days_remaining": 39,
+        "policy_note": "[V2-Current] Oct-2024 Policy: Shortened 60-day dispute window",
+        "policy_version": "V2-Current"
       },
       "duplicate_flag": false,
       "duplicate_note": "",
-      "error": "LLM unavailable; deterministic fallback used."
+      "defense_pass_notes": [],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-01",
+        "charge_type": "inbound_defect_fee",
+        "amount_usd": 2.5,
+        "posted_date": "2026-09-10",
+        "resolved_unit_id": "EVAL-U001",
+        "policy_version": "V2-Current",
+        "cited_records": [
+          {
+            "source": "prep",
+            "record_id": "EPRP-001",
+            "field": "polybag_present_sealed",
+            "value": "yes",
+            "timestamp": "2026-08-20T10:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-001",
+            "field": "suffocation_warning",
+            "value": "legible",
+            "timestamp": "2026-08-20T10:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-001",
+            "field": "fnsku_label_placement",
+            "value": "flat",
+            "timestamp": "2026-08-20T10:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-001",
+            "field": "original_barcode_covered",
+            "value": "yes",
+            "timestamp": "2026-08-20T10:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-001",
+            "field": "carton_damage",
+            "value": "none",
+            "timestamp": "2026-08-15T10:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-001",
+            "field": "unit_damage",
+            "value": "none",
+            "timestamp": "2026-08-15T10:00:00Z"
+          }
+        ],
+        "verdict": "CONTRADICTED"
+      },
+      "completeness_score": 0.46,
+      "missing_fields": [
+        "polybag_present",
+        "polybag_sealed",
+        "suffocation_warning_present",
+        "suffocation_warning_legible",
+        "fnsku_label_flat",
+        "fnsku_label_placement_valid",
+        "manufacturer_barcode_covered",
+        "expiry_date_legible",
+        "handling_marks_present"
+      ],
+      "error": ""
     },
     {
       "line_id": "E-02",
@@ -64,7 +133,8 @@
       "amount_usd": 1.5,
       "verdict": "SUPPORTED",
       "claim_amount": 0.0,
-      "reasoning": "Prep records show problematic fields: ['fnsku_label_placement']. Fee appears legitimate.",
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "Prep records show non-compliant fields: ['fnsku_label_placement']. Charge appears legitimate.",
       "supporting_evidence": [
         "fnsku_label_placement=on_seam"
       ],
@@ -80,12 +150,80 @@
         "status": "open",
         "deadline": "2026-11-11",
         "earliest_filing": "2026-09-12",
-        "days_remaining": 42,
-        "policy_note": "Amazon posts ~6 weeks after shipment check-in; 60-day dispute window from posting date"
+        "days_remaining": 41,
+        "policy_note": "[V2-Current] Oct-2024 Policy: Shortened 60-day dispute window",
+        "policy_version": "V2-Current"
       },
       "duplicate_flag": false,
       "duplicate_note": "",
-      "error": "LLM unavailable; deterministic fallback used."
+      "defense_pass_notes": [],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-02",
+        "charge_type": "inbound_defect_fee",
+        "amount_usd": 1.5,
+        "posted_date": "2026-09-12",
+        "resolved_unit_id": "EVAL-U002",
+        "policy_version": "V2-Current",
+        "cited_records": [
+          {
+            "source": "prep",
+            "record_id": "EPRP-002",
+            "field": "polybag_present_sealed",
+            "value": "yes",
+            "timestamp": "2026-08-20T11:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-002",
+            "field": "suffocation_warning",
+            "value": "legible",
+            "timestamp": "2026-08-20T11:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-002",
+            "field": "fnsku_label_placement",
+            "value": "on_seam",
+            "timestamp": "2026-08-20T11:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-002",
+            "field": "original_barcode_covered",
+            "value": "yes",
+            "timestamp": "2026-08-20T11:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-002",
+            "field": "carton_damage",
+            "value": "none",
+            "timestamp": "2026-08-15T11:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-002",
+            "field": "unit_damage",
+            "value": "none",
+            "timestamp": "2026-08-15T11:00:00Z"
+          }
+        ],
+        "verdict": "SUPPORTED"
+      },
+      "completeness_score": 0.46,
+      "missing_fields": [
+        "polybag_present",
+        "polybag_sealed",
+        "suffocation_warning_present",
+        "suffocation_warning_legible",
+        "fnsku_label_flat",
+        "fnsku_label_placement_valid",
+        "manufacturer_barcode_covered",
+        "expiry_date_legible",
+        "handling_marks_present"
+      ],
+      "error": ""
     },
     {
       "line_id": "E-03",
@@ -94,8 +232,9 @@
       "charge_type": "lost_inbound",
       "amount_usd": 0.0,
       "verdict": "CONTRADICTED",
-      "claim_amount": 0.0,
-      "reasoning": "Receiving record shows qty_received=6 matching qty_ordered=6. Unit was received; loss claim disputable.",
+      "claim_amount": 10.0,
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "Receiving record shows qty_received=6 matching qty_ordered=6. Unit loss claim disputable.",
       "supporting_evidence": [
         "qty_ordered=6",
         "qty_received=6"
@@ -118,12 +257,59 @@
         "status": "open",
         "deadline": "2026-10-31",
         "earliest_filing": "2026-09-16",
-        "days_remaining": 31,
-        "policy_note": "File after 15 days from expected arrival; window 60 days from inventory adjustment posting"
+        "days_remaining": 30,
+        "policy_note": "[V2-Current] Oct-2024 Policy: Shortened 60-day window from inventory adjustment",
+        "policy_version": "V2-Current"
       },
       "duplicate_flag": false,
       "duplicate_note": "",
-      "error": "LLM unavailable; deterministic fallback used."
+      "defense_pass_notes": [],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-03",
+        "charge_type": "lost_inbound",
+        "amount_usd": 0.0,
+        "posted_date": "2026-09-01",
+        "resolved_unit_id": "EVAL-U003",
+        "policy_version": "V2-Current",
+        "cited_records": [
+          {
+            "source": "receiving",
+            "record_id": "ERCV-003",
+            "field": "qty_ordered",
+            "value": "6",
+            "timestamp": "2026-08-16T09:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-003",
+            "field": "qty_received",
+            "value": "6",
+            "timestamp": "2026-08-16T09:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-003",
+            "field": "identity_match",
+            "value": "yes",
+            "timestamp": "2026-08-16T09:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-003",
+            "field": "carton_damage",
+            "value": "none",
+            "timestamp": "2026-08-16T09:00:00Z"
+          }
+        ],
+        "verdict": "CONTRADICTED"
+      },
+      "completeness_score": 0.67,
+      "missing_fields": [
+        "quantity_matches_po",
+        "identity_matches_po"
+      ],
+      "error": ""
     },
     {
       "line_id": "E-04",
@@ -133,19 +319,67 @@
       "amount_usd": 0.0,
       "verdict": "UNCERTAIN",
       "claim_amount": 0.0,
-      "reasoning": "Quantity data ambiguous or short-ship confirmed.",
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "Evidence exists but requires manual human review.",
       "supporting_evidence": [],
       "cited_fields": [],
       "sla": {
         "status": "open",
         "deadline": "2026-10-31",
         "earliest_filing": "2026-09-16",
-        "days_remaining": 31,
-        "policy_note": "File after 15 days from expected arrival; window 60 days from inventory adjustment posting"
+        "days_remaining": 30,
+        "policy_note": "[V2-Current] Oct-2024 Policy: Shortened 60-day window from inventory adjustment",
+        "policy_version": "V2-Current"
       },
       "duplicate_flag": false,
       "duplicate_note": "",
-      "error": "LLM unavailable; deterministic fallback used."
+      "defense_pass_notes": [],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-04",
+        "charge_type": "lost_inbound",
+        "amount_usd": 0.0,
+        "posted_date": "2026-09-01",
+        "resolved_unit_id": "EVAL-U004",
+        "policy_version": "V2-Current",
+        "cited_records": [
+          {
+            "source": "receiving",
+            "record_id": "ERCV-004",
+            "field": "qty_ordered",
+            "value": "12",
+            "timestamp": "2026-08-16T10:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-004",
+            "field": "qty_received",
+            "value": "6",
+            "timestamp": "2026-08-16T10:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-004",
+            "field": "identity_match",
+            "value": "yes",
+            "timestamp": "2026-08-16T10:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-004",
+            "field": "carton_damage",
+            "value": "none",
+            "timestamp": "2026-08-16T10:00:00Z"
+          }
+        ],
+        "verdict": "UNCERTAIN"
+      },
+      "completeness_score": 0.67,
+      "missing_fields": [
+        "quantity_matches_po",
+        "identity_matches_po"
+      ],
+      "error": ""
     },
     {
       "line_id": "E-05",
@@ -154,13 +388,20 @@
       "charge_type": "refund_issued_item_not_returned",
       "amount_usd": 0.0,
       "verdict": "CONTRADICTED",
-      "claim_amount": 0.0,
-      "reasoning": "Returns record shows unit was received back (disposition='restock', state='factory_sealed'). Contradicts 'item not returned' charge.",
+      "claim_amount": 15.0,
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "Returns record shows unit was returned (disposition='restock', state='factory_sealed'). Contradicts 'item not returned' charge.",
       "supporting_evidence": [
         "operator_disposition=restock",
         "observed_state=factory_sealed"
       ],
       "cited_fields": [
+        {
+          "source": "returns",
+          "record_id": "ERTN-005",
+          "field": "identity_match",
+          "value": "yes"
+        },
         {
           "source": "returns",
           "record_id": "ERTN-005",
@@ -176,14 +417,59 @@
       ],
       "sla": {
         "status": "open",
-        "deadline": "2026-09-30",
+        "deadline": "2026-11-14",
         "earliest_filing": "2026-09-15",
-        "days_remaining": 0,
-        "policy_note": "File 45\u2013105 days after the refund date (45 min wait + 60 day window)"
+        "days_remaining": 44,
+        "policy_note": "[V2-Current] Oct-2024 Policy: 45 min wait + 60 day window (105 days total from refund date)",
+        "policy_version": "V2-Current"
       },
       "duplicate_flag": false,
       "duplicate_note": "",
-      "error": "LLM unavailable; deterministic fallback used."
+      "defense_pass_notes": [
+        "\u26a0 No Receiving intake record on file for this unit"
+      ],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-05",
+        "charge_type": "refund_issued_item_not_returned",
+        "amount_usd": 0.0,
+        "posted_date": "2026-08-01",
+        "resolved_unit_id": "EVAL-U005",
+        "policy_version": "V2-Current",
+        "cited_records": [
+          {
+            "source": "returns",
+            "record_id": "ERTN-005",
+            "field": "identity_match",
+            "value": "yes",
+            "timestamp": "2026-08-25T10:00:00Z"
+          },
+          {
+            "source": "returns",
+            "record_id": "ERTN-005",
+            "field": "observed_state",
+            "value": "factory_sealed",
+            "timestamp": "2026-08-25T10:00:00Z"
+          },
+          {
+            "source": "returns",
+            "record_id": "ERTN-005",
+            "field": "operator_disposition",
+            "value": "restock",
+            "timestamp": "2026-08-25T10:00:00Z"
+          }
+        ],
+        "verdict": "CONTRADICTED"
+      },
+      "completeness_score": 0.38,
+      "missing_fields": [
+        "identity_matches_order",
+        "completeness_verified",
+        "condition_grade",
+        "disposition_assigned",
+        "amazon_condition"
+      ],
+      "error": ""
     },
     {
       "line_id": "E-06",
@@ -193,19 +479,44 @@
       "amount_usd": 0.0,
       "verdict": "SILENT",
       "claim_amount": 0.0,
-      "reasoning": "No upstream evidence found for this unit. Cannot support a claim.",
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "SILENT: No upstream evidence found for this unit. Cannot support a claim.",
       "supporting_evidence": [],
       "cited_fields": [],
       "sla": {
         "status": "open",
-        "deadline": "2026-09-30",
+        "deadline": "2026-11-14",
         "earliest_filing": "2026-09-15",
-        "days_remaining": 0,
-        "policy_note": "File 45\u2013105 days after the refund date (45 min wait + 60 day window)"
+        "days_remaining": 44,
+        "policy_note": "[V2-Current] Oct-2024 Policy: 45 min wait + 60 day window (105 days total from refund date)",
+        "policy_version": "V2-Current"
       },
       "duplicate_flag": false,
       "duplicate_note": "",
-      "error": "LLM unavailable; deterministic fallback used."
+      "defense_pass_notes": [],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-06",
+        "charge_type": "refund_issued_item_not_returned",
+        "amount_usd": 0.0,
+        "posted_date": "2026-08-01",
+        "resolved_unit_id": "EVAL-U006",
+        "policy_version": "V2-Current",
+        "cited_records": [],
+        "verdict": "SILENT"
+      },
+      "completeness_score": 0.0,
+      "missing_fields": [
+        "identity_matches_order",
+        "completeness_verified",
+        "condition_grade",
+        "disposition_assigned",
+        "identity_match",
+        "observed_state",
+        "amazon_condition",
+        "operator_disposition"
+      ],
+      "error": ""
     },
     {
       "line_id": "E-07A",
@@ -215,11 +526,11 @@
       "amount_usd": 3.0,
       "verdict": "CONTRADICTED",
       "claim_amount": 3.0,
-      "reasoning": "Prep records show compliant preparation. Inbound defect fee appears disputable.",
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "Prep records show compliant preparation. Inbound defect charge appears disputable.",
       "supporting_evidence": [
         "fnsku_label_placement=flat",
-        "original_barcode_covered=yes",
-        "handling_marks=all_present"
+        "original_barcode_covered=yes"
       ],
       "cited_fields": [
         {
@@ -233,24 +544,74 @@
           "record_id": "EPRP-007A",
           "field": "original_barcode_covered",
           "value": "yes"
-        },
-        {
-          "source": "prep",
-          "record_id": "EPRP-007A",
-          "field": "handling_marks",
-          "value": "all_present"
         }
       ],
       "sla": {
         "status": "open",
         "deadline": "2026-11-14",
         "earliest_filing": "2026-09-15",
-        "days_remaining": 45,
-        "policy_note": "Amazon posts ~6 weeks after shipment check-in; 60-day dispute window from posting date"
+        "days_remaining": 44,
+        "policy_note": "[V2-Current] Oct-2024 Policy: Shortened 60-day dispute window",
+        "policy_version": "V2-Current"
       },
-      "duplicate_flag": true,
-      "duplicate_note": "Possible duplicate of E-07B (same unit, type, amount within 30 days)",
-      "error": "LLM unavailable; deterministic fallback used."
+      "duplicate_flag": false,
+      "duplicate_note": "",
+      "defense_pass_notes": [
+        "\u26a0 No Receiving intake record on file for this unit"
+      ],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-07A",
+        "charge_type": "inbound_defect_fee",
+        "amount_usd": 3.0,
+        "posted_date": "2026-09-15",
+        "resolved_unit_id": "EVAL-U007",
+        "policy_version": "V2-Current",
+        "cited_records": [
+          {
+            "source": "prep",
+            "record_id": "EPRP-007A",
+            "field": "polybag_present_sealed",
+            "value": "not_required",
+            "timestamp": "2026-09-01T09:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-007A",
+            "field": "suffocation_warning",
+            "value": "not_required",
+            "timestamp": "2026-09-01T09:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-007A",
+            "field": "fnsku_label_placement",
+            "value": "flat",
+            "timestamp": "2026-09-01T09:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-007A",
+            "field": "original_barcode_covered",
+            "value": "yes",
+            "timestamp": "2026-09-01T09:00:00Z"
+          }
+        ],
+        "verdict": "CONTRADICTED"
+      },
+      "completeness_score": 0.31,
+      "missing_fields": [
+        "polybag_present",
+        "polybag_sealed",
+        "suffocation_warning_present",
+        "suffocation_warning_legible",
+        "fnsku_label_flat",
+        "fnsku_label_placement_valid",
+        "manufacturer_barcode_covered",
+        "expiry_date_legible",
+        "handling_marks_present"
+      ],
+      "error": ""
     },
     {
       "line_id": "E-07B",
@@ -259,12 +620,12 @@
       "charge_type": "inbound_defect_fee",
       "amount_usd": 3.0,
       "verdict": "CONTRADICTED",
-      "claim_amount": 3.0,
-      "reasoning": "Prep records show compliant preparation. Inbound defect fee appears disputable.",
+      "claim_amount": 0.0,
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "Prep records show compliant preparation. Inbound defect charge appears disputable.",
       "supporting_evidence": [
         "fnsku_label_placement=flat",
-        "original_barcode_covered=yes",
-        "handling_marks=all_present"
+        "original_barcode_covered=yes"
       ],
       "cited_fields": [
         {
@@ -278,24 +639,74 @@
           "record_id": "EPRP-007A",
           "field": "original_barcode_covered",
           "value": "yes"
-        },
-        {
-          "source": "prep",
-          "record_id": "EPRP-007A",
-          "field": "handling_marks",
-          "value": "all_present"
         }
       ],
       "sla": {
         "status": "open",
         "deadline": "2026-11-17",
         "earliest_filing": "2026-09-18",
-        "days_remaining": 48,
-        "policy_note": "Amazon posts ~6 weeks after shipment check-in; 60-day dispute window from posting date"
+        "days_remaining": 47,
+        "policy_note": "[V2-Current] Oct-2024 Policy: Shortened 60-day dispute window",
+        "policy_version": "V2-Current"
       },
       "duplicate_flag": true,
-      "duplicate_note": "Possible duplicate of E-07A (same unit, type, amount within 30 days)",
-      "error": "LLM unavailable; deterministic fallback used."
+      "duplicate_note": "DUPLICATE_SUPPRESSED: Duplicate of earlier charge E-07A (same unit, charge type, amount $3.00 within 30 days)",
+      "defense_pass_notes": [
+        "\u26a0 No Receiving intake record on file for this unit"
+      ],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-07B",
+        "charge_type": "inbound_defect_fee",
+        "amount_usd": 3.0,
+        "posted_date": "2026-09-18",
+        "resolved_unit_id": "EVAL-U007",
+        "policy_version": "V2-Current",
+        "cited_records": [
+          {
+            "source": "prep",
+            "record_id": "EPRP-007A",
+            "field": "polybag_present_sealed",
+            "value": "not_required",
+            "timestamp": "2026-09-01T09:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-007A",
+            "field": "suffocation_warning",
+            "value": "not_required",
+            "timestamp": "2026-09-01T09:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-007A",
+            "field": "fnsku_label_placement",
+            "value": "flat",
+            "timestamp": "2026-09-01T09:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-007A",
+            "field": "original_barcode_covered",
+            "value": "yes",
+            "timestamp": "2026-09-01T09:00:00Z"
+          }
+        ],
+        "verdict": "CONTRADICTED"
+      },
+      "completeness_score": 0.31,
+      "missing_fields": [
+        "polybag_present",
+        "polybag_sealed",
+        "suffocation_warning_present",
+        "suffocation_warning_legible",
+        "fnsku_label_flat",
+        "fnsku_label_placement_valid",
+        "manufacturer_barcode_covered",
+        "expiry_date_legible",
+        "handling_marks_present"
+      ],
+      "error": ""
     },
     {
       "line_id": "E-08",
@@ -305,26 +716,79 @@
       "amount_usd": 1.0,
       "verdict": "UNCERTAIN",
       "claim_amount": 0.0,
-      "reasoning": "Prep records have uncertain values for: ['polybag_present_sealed', 'suffocation_warning', 'fnsku_label_placement', 'original_barcode_covered', 'expiry_date', 'handling_marks']. Manual review required.",
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "Prep records have uncertain values for: ['polybag_present_sealed', 'suffocation_warning', 'fnsku_label_placement', 'original_barcode_covered']. UNCERTAIN evidence cannot support a claim.",
       "supporting_evidence": [
         "polybag_present_sealed=uncertain",
         "suffocation_warning=uncertain",
         "fnsku_label_placement=uncertain",
-        "original_barcode_covered=uncertain",
-        "expiry_date=uncertain",
-        "handling_marks=uncertain"
+        "original_barcode_covered=uncertain"
       ],
       "cited_fields": [],
       "sla": {
         "status": "open",
         "deadline": "2026-11-19",
         "earliest_filing": "2026-09-20",
-        "days_remaining": 50,
-        "policy_note": "Amazon posts ~6 weeks after shipment check-in; 60-day dispute window from posting date"
+        "days_remaining": 49,
+        "policy_note": "[V2-Current] Oct-2024 Policy: Shortened 60-day dispute window",
+        "policy_version": "V2-Current"
       },
       "duplicate_flag": false,
       "duplicate_note": "",
-      "error": "LLM unavailable; deterministic fallback used."
+      "defense_pass_notes": [],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-08",
+        "charge_type": "inbound_defect_fee",
+        "amount_usd": 1.0,
+        "posted_date": "2026-09-20",
+        "resolved_unit_id": "EVAL-U008",
+        "policy_version": "V2-Current",
+        "cited_records": [
+          {
+            "source": "prep",
+            "record_id": "EPRP-008",
+            "field": "polybag_present_sealed",
+            "value": "uncertain",
+            "timestamp": "2026-09-05T10:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-008",
+            "field": "suffocation_warning",
+            "value": "uncertain",
+            "timestamp": "2026-09-05T10:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-008",
+            "field": "fnsku_label_placement",
+            "value": "uncertain",
+            "timestamp": "2026-09-05T10:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-008",
+            "field": "original_barcode_covered",
+            "value": "uncertain",
+            "timestamp": "2026-09-05T10:00:00Z"
+          }
+        ],
+        "verdict": "UNCERTAIN"
+      },
+      "completeness_score": 0.31,
+      "missing_fields": [
+        "polybag_present",
+        "polybag_sealed",
+        "suffocation_warning_present",
+        "suffocation_warning_legible",
+        "fnsku_label_flat",
+        "fnsku_label_placement_valid",
+        "manufacturer_barcode_covered",
+        "expiry_date_legible",
+        "handling_marks_present"
+      ],
+      "error": ""
     },
     {
       "line_id": "E-09",
@@ -334,19 +798,56 @@
       "amount_usd": 12.0,
       "verdict": "SILENT",
       "claim_amount": 0.0,
-      "reasoning": "No upstream evidence found for this unit. Cannot support a claim.",
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "SILENT: Evidence record captured_at postdates the charge posted_date; cannot prove condition prior to charge.",
       "supporting_evidence": [],
       "cited_fields": [],
       "sla": {
         "status": "open",
         "deadline": "2026-11-04",
         "earliest_filing": "2026-09-05",
-        "days_remaining": 35,
-        "policy_note": "60 days from the date Amazon posts the adjustment"
+        "days_remaining": 34,
+        "policy_note": "[V2-Current] Oct-2024 Policy: 60-day window",
+        "policy_version": "V2-Current"
       },
       "duplicate_flag": false,
       "duplicate_note": "",
-      "error": "LLM unavailable; deterministic fallback used."
+      "defense_pass_notes": [],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-09",
+        "charge_type": "damaged_in_warehouse",
+        "amount_usd": 12.0,
+        "posted_date": "2026-09-05",
+        "resolved_unit_id": "EVAL-U009",
+        "policy_version": "V2-Current",
+        "cited_records": [
+          {
+            "source": "prep",
+            "record_id": "EPRP-008",
+            "field": "polybag_present_sealed",
+            "value": "uncertain",
+            "timestamp": "2026-09-05T10:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-010",
+            "field": "polybag_present_sealed",
+            "value": "not_required",
+            "timestamp": "2026-09-10T08:00:00Z"
+          }
+        ],
+        "verdict": "SILENT"
+      },
+      "completeness_score": 0.4,
+      "missing_fields": [
+        "carton_damage",
+        "unit_damage",
+        "unit_undamaged",
+        "quality_flags",
+        "identity_match"
+      ],
+      "error": ""
     },
     {
       "line_id": "E-10",
@@ -356,19 +857,172 @@
       "amount_usd": 5.1,
       "verdict": "UNCERTAIN",
       "claim_amount": 0.0,
-      "reasoning": "Evidence exists but rule-based classifier has no specific rule for this charge type.",
-      "supporting_evidence": [],
-      "cited_fields": [],
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "SKU confirmed via receiving spec fields ({'units_per_carton_counted': '12', 'spec_colour': 'n/a', 'spec_variant': '1kg', 'spec_components': 'tub;scoop', 'sku': 'SKU-PROT-1KG'}), but physical scale weight measurement is missing from records. Manual weight verification required.",
+      "supporting_evidence": [
+        "units_per_carton_counted=12",
+        "spec_colour=n/a",
+        "spec_variant=1kg",
+        "spec_components=tub;scoop",
+        "sku=SKU-PROT-1KG"
+      ],
+      "cited_fields": [
+        {
+          "source": "receiving",
+          "record_id": "ERCV-010",
+          "field": "units_per_carton_counted",
+          "value": "12"
+        },
+        {
+          "source": "receiving",
+          "record_id": "ERCV-010",
+          "field": "spec_colour",
+          "value": "n/a"
+        },
+        {
+          "source": "receiving",
+          "record_id": "ERCV-010",
+          "field": "spec_variant",
+          "value": "1kg"
+        },
+        {
+          "source": "receiving",
+          "record_id": "ERCV-010",
+          "field": "spec_components",
+          "value": "tub;scoop"
+        },
+        {
+          "source": "receiving",
+          "record_id": "ERCV-010",
+          "field": "sku",
+          "value": "SKU-PROT-1KG"
+        },
+        {
+          "source": "prep",
+          "record_id": "EPRP-010",
+          "field": "sku",
+          "value": "SKU-PROT-1KG"
+        }
+      ],
       "sla": {
         "status": "open",
         "deadline": "2026-12-21",
         "earliest_filing": "2026-09-22",
-        "days_remaining": 82,
-        "policy_note": "Dispute fee overcharge within 90 days of the fee posting date"
+        "days_remaining": 81,
+        "policy_note": "[V2-Current] Fee discrepancy dispute window: 90 days",
+        "policy_version": "V2-Current"
       },
       "duplicate_flag": false,
       "duplicate_note": "",
-      "error": "LLM unavailable; deterministic fallback used."
+      "defense_pass_notes": [],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-10",
+        "charge_type": "fulfilment_fee_weight_tier",
+        "amount_usd": 5.1,
+        "posted_date": "2026-09-22",
+        "resolved_unit_id": "EVAL-U010",
+        "policy_version": "V2-Current",
+        "cited_records": [
+          {
+            "source": "receiving",
+            "record_id": "ERCV-010",
+            "field": "cartons_ordered",
+            "value": "1",
+            "timestamp": "2026-08-20T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-010",
+            "field": "cartons_received",
+            "value": "1",
+            "timestamp": "2026-08-20T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-010",
+            "field": "units_per_carton_ordered",
+            "value": "12",
+            "timestamp": "2026-08-20T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-010",
+            "field": "units_per_carton_counted",
+            "value": "12",
+            "timestamp": "2026-08-20T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-010",
+            "field": "spec_colour",
+            "value": "n/a",
+            "timestamp": "2026-08-20T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-010",
+            "field": "spec_variant",
+            "value": "1kg",
+            "timestamp": "2026-08-20T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-010",
+            "field": "spec_components",
+            "value": "tub;scoop",
+            "timestamp": "2026-08-20T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-010",
+            "field": "sku",
+            "value": "SKU-PROT-1KG",
+            "timestamp": "2026-08-20T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-010",
+            "field": "asin",
+            "value": "B0EVAL010",
+            "timestamp": "2026-08-20T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-010",
+            "field": "product_title",
+            "value": "Whey Protein",
+            "timestamp": "2026-08-20T08:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-010",
+            "field": "sku",
+            "value": "SKU-PROT-1KG",
+            "timestamp": "2026-09-10T08:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-010",
+            "field": "fnsku",
+            "value": "X00EVAL010",
+            "timestamp": "2026-09-10T08:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-010",
+            "field": "fba_shipment_id",
+            "value": "FBA-EVAL-3",
+            "timestamp": "2026-09-10T08:00:00Z"
+          }
+        ],
+        "verdict": "UNCERTAIN"
+      },
+      "completeness_score": 1.0,
+      "missing_fields": [
+        "quality_flags"
+      ],
+      "error": ""
     },
     {
       "line_id": "E-11",
@@ -378,7 +1032,8 @@
       "amount_usd": 2.0,
       "verdict": "SILENT",
       "claim_amount": 0.0,
-      "reasoning": "[SLA EXPIRED] Claim window closed on 2026-07-31. Prep records show compliant preparation. Inbound defect fee appears disputable.",
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "[EXPIRED SLA / MISSED RECOVERABLE] Filing window expired on 2026-07-31 (SLA policy V2-Current). Prep records show compliant preparation. Inbound defect charge appears disputable.",
       "supporting_evidence": [
         "polybag_present_sealed=yes",
         "suffocation_warning=legible",
@@ -408,12 +1063,80 @@
         "status": "expired",
         "deadline": "2026-07-31",
         "earliest_filing": "2026-06-01",
-        "days_remaining": -61,
-        "policy_note": "Amazon posts ~6 weeks after shipment check-in; 60-day dispute window from posting date"
+        "days_remaining": -62,
+        "policy_note": "[V2-Current] Oct-2024 Policy: Shortened 60-day dispute window",
+        "policy_version": "V2-Current"
       },
       "duplicate_flag": false,
       "duplicate_note": "",
-      "error": "LLM unavailable; deterministic fallback used."
+      "defense_pass_notes": [],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-11",
+        "charge_type": "inbound_defect_fee",
+        "amount_usd": 2.0,
+        "posted_date": "2026-06-01",
+        "resolved_unit_id": "EVAL-U011",
+        "policy_version": "V2-Current",
+        "cited_records": [
+          {
+            "source": "prep",
+            "record_id": "EPRP-011",
+            "field": "polybag_present_sealed",
+            "value": "yes",
+            "timestamp": "2026-04-15T08:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-011",
+            "field": "suffocation_warning",
+            "value": "legible",
+            "timestamp": "2026-04-15T08:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-011",
+            "field": "fnsku_label_placement",
+            "value": "flat",
+            "timestamp": "2026-04-15T08:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-011",
+            "field": "original_barcode_covered",
+            "value": "yes",
+            "timestamp": "2026-04-15T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-011",
+            "field": "carton_damage",
+            "value": "none",
+            "timestamp": "2026-05-01T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-011",
+            "field": "unit_damage",
+            "value": "none",
+            "timestamp": "2026-05-01T08:00:00Z"
+          }
+        ],
+        "verdict": "SILENT"
+      },
+      "completeness_score": 0.46,
+      "missing_fields": [
+        "polybag_present",
+        "polybag_sealed",
+        "suffocation_warning_present",
+        "suffocation_warning_legible",
+        "fnsku_label_flat",
+        "fnsku_label_placement_valid",
+        "manufacturer_barcode_covered",
+        "expiry_date_legible",
+        "handling_marks_present"
+      ],
+      "error": ""
     },
     {
       "line_id": "E-12",
@@ -422,8 +1145,9 @@
       "charge_type": "lost_inbound",
       "amount_usd": 0.0,
       "verdict": "CONTRADICTED",
-      "claim_amount": 0.0,
-      "reasoning": "Receiving record shows qty_received=24 matching qty_ordered=24. Unit was received; loss claim disputable.",
+      "claim_amount": 10.0,
+      "already_reimbursed_amount": 0.0,
+      "reasoning": "Receiving record shows qty_received=24 matching qty_ordered=24. Unit loss claim disputable.",
       "supporting_evidence": [
         "qty_ordered=24",
         "qty_received=24"
@@ -446,12 +1170,66 @@
         "status": "open",
         "deadline": "2026-11-09",
         "earliest_filing": "2026-09-25",
-        "days_remaining": 40,
-        "policy_note": "File after 15 days from expected arrival; window 60 days from inventory adjustment posting"
+        "days_remaining": 39,
+        "policy_note": "[V2-Current] Oct-2024 Policy: Shortened 60-day window from inventory adjustment",
+        "policy_version": "V2-Current"
       },
       "duplicate_flag": false,
       "duplicate_note": "",
-      "error": "LLM unavailable; deterministic fallback used."
+      "defense_pass_notes": [],
+      "hallucination_blocked": false,
+      "evidence_dna_tree": {
+        "charge_id": "E-12",
+        "charge_type": "lost_inbound",
+        "amount_usd": 0.0,
+        "posted_date": "2026-09-10",
+        "resolved_unit_id": "EVAL-U012",
+        "policy_version": "V2-Current",
+        "cited_records": [
+          {
+            "source": "receiving",
+            "record_id": "ERCV-012",
+            "field": "qty_ordered",
+            "value": "24",
+            "timestamp": "2026-08-25T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-012",
+            "field": "qty_received",
+            "value": "24",
+            "timestamp": "2026-08-25T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-012",
+            "field": "identity_match",
+            "value": "yes",
+            "timestamp": "2026-08-25T08:00:00Z"
+          },
+          {
+            "source": "receiving",
+            "record_id": "ERCV-012",
+            "field": "carton_damage",
+            "value": "none",
+            "timestamp": "2026-08-25T08:00:00Z"
+          },
+          {
+            "source": "prep",
+            "record_id": "EPRP-012",
+            "field": "fba_shipment_id",
+            "value": "FBA-EVAL-4",
+            "timestamp": "2026-08-20T08:00:00Z"
+          }
+        ],
+        "verdict": "CONTRADICTED"
+      },
+      "completeness_score": 0.83,
+      "missing_fields": [
+        "quantity_matches_po",
+        "identity_matches_po"
+      ],
+      "error": ""
     }
   ]
 }

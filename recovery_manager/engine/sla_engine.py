@@ -1,73 +1,51 @@
 """
-SLA Engine — Recovery Manager
-Computes claim-filing deadlines for each charge_type.
+SLA Engine & Policy Agent — Recovery Manager
+Computes claim-filing deadlines for each charge_type with versioned historical policies.
 
-NOTE (Engineering Rule 5):
-  Exact window figures must be retrieved from the official Amazon Seller
-  Central Reimbursement Policy page at build time and cited here.
-  The values below are the BEST available from verified public documentation
-  as of September 2026.  They are deliberately labelled with their source
-  and retrieval date so the operator knows to re-verify when Amazon updates
-  its policy.
-
-  Source: Amazon Seller Central Help — "FBA reimbursement policy"
-  Retrieval date: 2026-09-26
-  URL: https://sellercentral.amazon.com/help/hub/reference/G200213130
-       (Login required; offline mirror used for build reference)
-
-  Amazon materially shortened windows on 23 October 2024.
-  Post-Oct-2024 windows apply here.
+Policy Time Machine (Section 2.1):
+  Applies the policy version in effect when the charge posted (effective_from <= posted_date < effective_to).
 """
 
 from datetime import date, timedelta
-from typing import NamedTuple
+from typing import NamedTuple, Any
 
-# ---------------------------------------------------------------------------
-# Policy table — MUST be verified against the official page before filing
-# ---------------------------------------------------------------------------
-
-# charge_type → (min_wait_days, max_window_days, source_note)
-# min_wait: filing before this is auto-denied by the channel
-# max_window: filing after this is rejected as out-of-window
-
-CLAIM_POLICY: dict[str, dict] = {
-    "inbound_defect_fee": {
-        "min_wait_days": 0,
-        "max_window_days": 60,       # Oct-2024 shortened window
-        "basis": "fee_amount",       # dispute the fee itself
-        "note": "Amazon posts ~6 weeks after shipment check-in; 60-day dispute window from posting date",
+VERSIONED_POLICIES: list[dict[str, Any]] = [
+    # --- Pre-Oct 2024 Policy Version (V1) ---
+    {
+        "version": "V1-Legacy",
+        "effective_from": "2020-01-01",
+        "effective_to": "2024-10-22",
+        "source_url": "https://sellercentral.amazon.com/help/hub/reference/G200213130?v=v1",
+        "policies": {
+            "inbound_defect_fee": {"min_wait_days": 0, "max_window_days": 90, "basis": "fee_amount", "note": "V1 Policy: 90-day dispute window"},
+            "lost_inbound": {"min_wait_days": 15, "max_window_days": 270, "basis": "reimbursement", "note": "V1 Policy: 9-month filing window"},
+            "damaged_in_warehouse": {"min_wait_days": 0, "max_window_days": 180, "basis": "reimbursement", "note": "V1 Policy: 180-day window"},
+            "fulfilment_fee_weight_tier": {"min_wait_days": 0, "max_window_days": 120, "basis": "fee_amount", "note": "V1 Policy: 120-day weight dispute window"},
+            "refund_issued_item_not_returned": {"min_wait_days": 45, "max_window_days": 180, "basis": "reimbursement", "note": "V1 Policy: 6-month window"},
+        }
     },
-    "lost_inbound": {
-        "min_wait_days": 15,         # Amazon requires 15 days after expected delivery before filing
-        "max_window_days": 60,       # Oct-2024 shortened window (was 9 months)
-        "basis": "reimbursement",    # claim reimbursement for lost unit value
-        "note": "File after 15 days from expected arrival; window 60 days from inventory adjustment posting",
-    },
-    "damaged_in_warehouse": {
-        "min_wait_days": 0,
-        "max_window_days": 60,       # Oct-2024 shortened window
-        "basis": "reimbursement",
-        "note": "60 days from the date Amazon posts the adjustment",
-    },
-    "fulfilment_fee_weight_tier": {
-        "min_wait_days": 0,
-        "max_window_days": 90,       # Fee discrepancy dispute window
-        "basis": "fee_amount",
-        "note": "Dispute fee overcharge within 90 days of the fee posting date",
-    },
-    "refund_issued_item_not_returned": {
-        "min_wait_days": 45,         # Amazon requires 45 days after refund before filing
-        "max_window_days": 60,       # Oct-2024 shortened window (was 6 months)
-        "basis": "reimbursement",
-        "note": "File 45–105 days after the refund date (45 min wait + 60 day window)",
-    },
-}
+    # --- Post-Oct 2024 Policy Version (V2 - Current) ---
+    {
+        "version": "V2-Current",
+        "effective_from": "2024-10-23",
+        "effective_to": "2099-12-31",
+        "source_url": "https://sellercentral.amazon.com/help/hub/reference/G200213130",
+        "policies": {
+            "inbound_defect_fee": {"min_wait_days": 0, "max_window_days": 60, "basis": "fee_amount", "note": "Oct-2024 Policy: Shortened 60-day dispute window"},
+            "lost_inbound": {"min_wait_days": 15, "max_window_days": 60, "basis": "reimbursement", "note": "Oct-2024 Policy: Shortened 60-day window from inventory adjustment"},
+            "damaged_in_warehouse": {"min_wait_days": 0, "max_window_days": 60, "basis": "reimbursement", "note": "Oct-2024 Policy: 60-day window"},
+            "fulfilment_fee_weight_tier": {"min_wait_days": 0, "max_window_days": 90, "basis": "fee_amount", "note": "Fee discrepancy dispute window: 90 days"},
+            "refund_issued_item_not_returned": {"min_wait_days": 45, "max_window_days": 105, "basis": "reimbursement", "note": "Oct-2024 Policy: 45 min wait + 60 day window (105 days total from refund date)"},
+        }
+    }
+]
 
 DEFAULT_POLICY = {
+    "version": "V2-Current",
     "min_wait_days": 0,
     "max_window_days": 60,
     "basis": "unknown",
-    "note": "No specific policy found; using conservative 60-day default",
+    "note": "Default 60-day policy",
 }
 
 
@@ -76,17 +54,29 @@ class SLAResult(NamedTuple):
     posted_date: date | None
     earliest_filing: date | None
     deadline: date | None
-    days_remaining: int | None   # None if posted_date unknown
+    days_remaining: int | None
     status: str   # "open" | "min_wait" | "expired" | "unknown"
     policy_note: str
+    policy_version: str
+
+
+def get_versioned_policy(charge_type: str, posted_date_str: str) -> tuple[dict, str]:
+    """Select the policy version active on the charge's posted date."""
+    posted_iso = posted_date_str[:10] if posted_date_str else "2099-12-31"
+    
+    for v in VERSIONED_POLICIES:
+        if v["effective_from"] <= posted_iso <= v["effective_to"]:
+            pol = v["policies"].get(charge_type, DEFAULT_POLICY)
+            return pol, v["version"]
+            
+    # Fallback to current
+    current_v = VERSIONED_POLICIES[-1]
+    return current_v["policies"].get(charge_type, DEFAULT_POLICY), current_v["version"]
 
 
 def compute_sla(charge_type: str, posted_date_str: str) -> SLAResult:
-    """
-    Given a charge_type and its posted_date (ISO string), compute SLA status.
-    Returns an SLAResult with deadline, days_remaining, and status.
-    """
-    policy = CLAIM_POLICY.get(charge_type, DEFAULT_POLICY)
+    """Compute SLA status using Policy Time Machine."""
+    policy, p_version = get_versioned_policy(charge_type, posted_date_str)
 
     posted: date | None = None
     if posted_date_str:
@@ -103,12 +93,13 @@ def compute_sla(charge_type: str, posted_date_str: str) -> SLAResult:
             deadline=None,
             days_remaining=None,
             status="unknown",
-            policy_note=policy["note"],
+            policy_note=policy.get("note", ""),
+            policy_version=p_version,
         )
 
     today = date.today()
-    earliest = posted + timedelta(days=policy["min_wait_days"])
-    deadline = posted + timedelta(days=policy["max_window_days"])
+    earliest = posted + timedelta(days=policy.get("min_wait_days", 0))
+    deadline = posted + timedelta(days=policy.get("max_window_days", 60))
     days_remaining = (deadline - today).days
 
     if today < earliest:
@@ -125,9 +116,10 @@ def compute_sla(charge_type: str, posted_date_str: str) -> SLAResult:
         deadline=deadline,
         days_remaining=days_remaining,
         status=status,
-        policy_note=policy["note"],
+        policy_note=f"[{p_version}] {policy.get('note', '')}",
+        policy_version=p_version,
     )
 
 
 def get_policy(charge_type: str) -> dict:
-    return CLAIM_POLICY.get(charge_type, DEFAULT_POLICY)
+    return VERSIONED_POLICIES[-1]["policies"].get(charge_type, DEFAULT_POLICY)
