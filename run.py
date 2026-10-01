@@ -16,12 +16,13 @@ if __name__ == "__main__":
     debug = os.environ.get("FLASK_DEBUG", "true").lower() == "true"
     host = os.environ.get("HOST", "0.0.0.0")
 
-    print(f"\n  ⚡ AUDIX Recovery Intelligence")
-    print(f"  ─────────────────────────────────────────────")
-    print(f"  🌐 Landing Page    →  http://localhost:{port}/")
-    print(f"  📊 App Workspace   →  http://localhost:{port}/app")
-    print(f"  🎬 Demo            →  http://localhost:{port}/demo")
-    print(f"  💊 Health Check    →  http://localhost:{port}/health")
-    print(f"  ─────────────────────────────────────────────\n")
+    print(f"\n  AUDIX Recovery Intelligence v1.0.0")
+    print(f"  -----------------------------------------")
+    print(f"  Landing Page    ->  http://localhost:{port}/")
+    print(f"  App Workspace   ->  http://localhost:{port}/app")
+    print(f"  Demo            ->  http://localhost:{port}/demo")
+    print(f"  Health Check    ->  http://localhost:{port}/health")
+    print(f"  -----------------------------------------\n")
+
 
     app.run(host=host, port=port, debug=debug)
