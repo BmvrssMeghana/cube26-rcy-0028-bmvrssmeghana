@@ -100,7 +100,7 @@ def run_recovery(
 
         decisions.append(decision)
 
-    # Summary Metrics (Section 1.4 Acceptance Check)
+    # 4. Summary Metrics & Root Cause Analysis
     total = len(decisions)
     recommended = [d for d in decisions if d.verdict == "CONTRADICTED"]
     supported = [d for d in decisions if d.verdict == "SUPPORTED"]
@@ -113,6 +113,14 @@ def run_recovery(
     pending = [d for d in decisions if d.verdict == "PENDING_REVIEW"]
 
     total_claim_value = sum(d.claim_amount for d in recommended)
+
+    # Root Cause Driver Breakdown (USP #10)
+    root_cause_counts = {}
+    for d in decisions:
+        driver = getattr(d, "root_cause_driver", "General Dispute")
+        root_cause_counts[driver] = root_cause_counts.get(driver, 0) + 1
+
+    top_root_cause = max(root_cause_counts.items(), key=lambda x: x[1])[0] if root_cause_counts else "None"
 
     metrics = {
         "analysis_run_timestamp": run_timestamp,
@@ -127,12 +135,28 @@ def run_recovery(
         "expired_claims": len(expired),
         "pending_review": len(pending),
         "total_claim_value_usd": round(total_claim_value, 2),
+        "top_root_cause_driver": top_root_cause,
+        "root_cause_breakdown": root_cause_counts,
     }
+
+    # Run-to-Run Delta Calculation (USP #9)
+    global _LAST_RUN_RESULTS
+    delta = {"new_claims": 0, "value_delta_usd": 0.0}
+    if _LAST_RUN_RESULTS:
+        prev_val = _LAST_RUN_RESULTS.get("metrics", {}).get("total_claim_value_usd", 0.0)
+        prev_claims = _LAST_RUN_RESULTS.get("metrics", {}).get("claims_recommended", 0)
+        delta = {
+            "new_claims": len(recommended) - prev_claims,
+            "value_delta_usd": round(total_claim_value - prev_val, 2),
+        }
 
     results = {
         "metrics": metrics,
+        "delta": delta,
         "decisions": [_safe_asdict(d) for d in decisions],
     }
+
+    _LAST_RUN_RESULTS = results
 
     # Save to PostgreSQL database
     try:
@@ -142,6 +166,8 @@ def run_recovery(
         print(f"[Warning] Failed to persist audit log to DB: {e}")
 
     return results
+
+_LAST_RUN_RESULTS: dict[str, Any] | None = None
 
 
 def run_from_files(

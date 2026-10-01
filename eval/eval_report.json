@@ -20,11 +20,11 @@
       "verdict": "CONTRADICTED",
       "claim_amount": 2.5,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "Prep records show compliant preparation. Inbound defect charge appears disputable.",
+      "reasoning": "Prep inspection logs confirm items were prepared fully in compliance with guidelines prior to intake.",
       "supporting_evidence": [
-        "polybag_present_sealed=yes",
-        "suffocation_warning=legible",
-        "fnsku_label_placement=flat"
+        "Polybag present sealed: Verified (yes)",
+        "Suffocation warning: Verified (legible)",
+        "Fnsku label placement: Verified (flat)"
       ],
       "cited_fields": [
         {
@@ -123,6 +123,74 @@
         "expiry_date_legible",
         "handling_marks_present"
       ],
+      "claimability_score": 86,
+      "score_breakdown": {
+        "evidence_coverage": "11/25",
+        "rule_match": "20/20",
+        "timing_custody": "20/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "10/10",
+        "sla_window": "10/10"
+      },
+      "evidence_strength": "MODERATE",
+      "priority_level": "NORMAL",
+      "adversarial_pass": true,
+      "adversarial_findings": [],
+      "why_not_claim": "",
+      "required_evidence_to_resolve": [],
+      "custody_window": {
+        "evidence_start": "2026-08-15T10:00:00Z",
+        "charge_posted": "2026-09-10",
+        "filing_deadline": "2026-11-09",
+        "precedes_charge": true,
+        "valid_custody": true
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-01",
+            "type": "charge",
+            "label": "Fee Charge: inbound_defect_fee",
+            "amount": 2.5
+          },
+          {
+            "id": "unit-EVAL-U001",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U001"
+          },
+          {
+            "id": "prep-EPRP-001",
+            "type": "prep",
+            "label": "PREP (EPRP-001)",
+            "timestamp": "2026-08-20T10:00:00Z"
+          },
+          {
+            "id": "receiving-ERCV-001",
+            "type": "receiving",
+            "label": "RECEIVING (ERCV-001)",
+            "timestamp": "2026-08-15T10:00:00Z"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-01",
+            "to": "unit-EVAL-U001",
+            "label": "assigned_to"
+          },
+          {
+            "from": "unit-EVAL-U001",
+            "to": "prep-EPRP-001",
+            "label": "verified_polybag_present_sealed"
+          },
+          {
+            "from": "unit-EVAL-U001",
+            "to": "receiving-ERCV-001",
+            "label": "verified_carton_damage"
+          }
+        ]
+      },
+      "sha256_hash": "68a48a6419c34a3cd9fee798e191941619c312a7e4bf9c12d7f8b949923ce5c8",
+      "root_cause_driver": "Packaging & Polybag Compliance",
       "error": ""
     },
     {
@@ -134,9 +202,9 @@
       "verdict": "SUPPORTED",
       "claim_amount": 0.0,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "Prep records show non-compliant fields: ['fnsku_label_placement']. Charge appears legitimate.",
+      "reasoning": "Prep records show non-compliant prep work: fnsku_label_placement. Charge is legitimate.",
       "supporting_evidence": [
-        "fnsku_label_placement=on_seam"
+        "Fnsku label placement: on_seam"
       ],
       "cited_fields": [
         {
@@ -223,6 +291,77 @@
         "expiry_date_legible",
         "handling_marks_present"
       ],
+      "claimability_score": 65,
+      "score_breakdown": {
+        "evidence_coverage": "11/25",
+        "rule_match": "20/20",
+        "timing_custody": "20/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "10/10",
+        "sla_window": "10/10"
+      },
+      "evidence_strength": "MODERATE",
+      "priority_level": "LOW",
+      "adversarial_pass": false,
+      "adversarial_findings": [],
+      "why_not_claim": "Charge is verified legitimate based on upstream operational logs showing non-compliant work or item damage.",
+      "required_evidence_to_resolve": [
+        "Revised operator compliance log",
+        "Audit override sign-off"
+      ],
+      "custody_window": {
+        "evidence_start": "2026-08-15T11:00:00Z",
+        "charge_posted": "2026-09-12",
+        "filing_deadline": "2026-11-11",
+        "precedes_charge": true,
+        "valid_custody": true
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-02",
+            "type": "charge",
+            "label": "Fee Charge: inbound_defect_fee",
+            "amount": 1.5
+          },
+          {
+            "id": "unit-EVAL-U002",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U002"
+          },
+          {
+            "id": "prep-EPRP-002",
+            "type": "prep",
+            "label": "PREP (EPRP-002)",
+            "timestamp": "2026-08-20T11:00:00Z"
+          },
+          {
+            "id": "receiving-ERCV-002",
+            "type": "receiving",
+            "label": "RECEIVING (ERCV-002)",
+            "timestamp": "2026-08-15T11:00:00Z"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-02",
+            "to": "unit-EVAL-U002",
+            "label": "assigned_to"
+          },
+          {
+            "from": "unit-EVAL-U002",
+            "to": "prep-EPRP-002",
+            "label": "verified_polybag_present_sealed"
+          },
+          {
+            "from": "unit-EVAL-U002",
+            "to": "receiving-ERCV-002",
+            "label": "verified_carton_damage"
+          }
+        ]
+      },
+      "sha256_hash": "ddb0518b6c91dee6afa2717d89e72900e4a8dbd1768989fb6af6be9afba9cdf8",
+      "root_cause_driver": "Packaging & Polybag Compliance",
       "error": ""
     },
     {
@@ -234,10 +373,10 @@
       "verdict": "CONTRADICTED",
       "claim_amount": 10.0,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "Receiving record shows qty_received=6 matching qty_ordered=6. Unit loss claim disputable.",
+      "reasoning": "Receiving intake records confirm all 6 ordered units arrived intact and fully accounted for. Inventory loss claim is disputable.",
       "supporting_evidence": [
-        "qty_ordered=6",
-        "qty_received=6"
+        "Ordered Quantity: 6",
+        "Received Quantity: 6"
       ],
       "cited_fields": [
         {
@@ -309,6 +448,63 @@
         "quantity_matches_po",
         "identity_matches_po"
       ],
+      "claimability_score": 91,
+      "score_breakdown": {
+        "evidence_coverage": "16/25",
+        "rule_match": "20/20",
+        "timing_custody": "20/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "10/10",
+        "sla_window": "10/10"
+      },
+      "evidence_strength": "MODERATE",
+      "priority_level": "NORMAL",
+      "adversarial_pass": true,
+      "adversarial_findings": [],
+      "why_not_claim": "",
+      "required_evidence_to_resolve": [],
+      "custody_window": {
+        "evidence_start": "2026-08-16T09:00:00Z",
+        "charge_posted": "2026-09-01",
+        "filing_deadline": "2026-10-31",
+        "precedes_charge": true,
+        "valid_custody": true
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-03",
+            "type": "charge",
+            "label": "Fee Charge: lost_inbound",
+            "amount": 0.0
+          },
+          {
+            "id": "unit-EVAL-U003",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U003"
+          },
+          {
+            "id": "receiving-ERCV-003",
+            "type": "receiving",
+            "label": "RECEIVING (ERCV-003)",
+            "timestamp": "2026-08-16T09:00:00Z"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-03",
+            "to": "unit-EVAL-U003",
+            "label": "assigned_to"
+          },
+          {
+            "from": "unit-EVAL-U003",
+            "to": "receiving-ERCV-003",
+            "label": "verified_qty_ordered"
+          }
+        ]
+      },
+      "sha256_hash": "a992447d58fe07ca01a49adc28eed77217d1aa3bc45a2aff7f267629dbd2f792",
+      "root_cause_driver": "Inbound Receiving Discrepancy",
       "error": ""
     },
     {
@@ -320,7 +516,7 @@
       "verdict": "UNCERTAIN",
       "claim_amount": 0.0,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "Evidence exists but requires manual human review.",
+      "reasoning": "Operational evidence exists but requires manual human review.",
       "supporting_evidence": [],
       "cited_fields": [],
       "sla": {
@@ -379,6 +575,66 @@
         "quantity_matches_po",
         "identity_matches_po"
       ],
+      "claimability_score": 65,
+      "score_breakdown": {
+        "evidence_coverage": "16/25",
+        "rule_match": "20/20",
+        "timing_custody": "20/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "10/10",
+        "sla_window": "10/10"
+      },
+      "evidence_strength": "MODERATE",
+      "priority_level": "LOW",
+      "adversarial_pass": false,
+      "adversarial_findings": [],
+      "why_not_claim": "Evidence exists but exhibits data gaps or unverified measurement fields.",
+      "required_evidence_to_resolve": [
+        "Scale physical weight measurement log",
+        "Warehouse photo confirmation"
+      ],
+      "custody_window": {
+        "evidence_start": "2026-08-16T10:00:00Z",
+        "charge_posted": "2026-09-01",
+        "filing_deadline": "2026-10-31",
+        "precedes_charge": true,
+        "valid_custody": true
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-04",
+            "type": "charge",
+            "label": "Fee Charge: lost_inbound",
+            "amount": 0.0
+          },
+          {
+            "id": "unit-EVAL-U004",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U004"
+          },
+          {
+            "id": "receiving-ERCV-004",
+            "type": "receiving",
+            "label": "RECEIVING (ERCV-004)",
+            "timestamp": "2026-08-16T10:00:00Z"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-04",
+            "to": "unit-EVAL-U004",
+            "label": "assigned_to"
+          },
+          {
+            "from": "unit-EVAL-U004",
+            "to": "receiving-ERCV-004",
+            "label": "verified_qty_ordered"
+          }
+        ]
+      },
+      "sha256_hash": "ba962586a2b458da27dd467f6988509261f31f582604884048e876e1ffca0c9f",
+      "root_cause_driver": "Inbound Receiving Discrepancy",
       "error": ""
     },
     {
@@ -390,10 +646,10 @@
       "verdict": "CONTRADICTED",
       "claim_amount": 15.0,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "Returns record shows unit was returned (disposition='restock', state='factory_sealed'). Contradicts 'item not returned' charge.",
+      "reasoning": "Returns logs confirm unit was returned (Factory sealed and Restock), directly contradicting the 'item not returned' fee.",
       "supporting_evidence": [
-        "operator_disposition=restock",
-        "observed_state=factory_sealed"
+        "Item Condition: Factory sealed",
+        "Inventory Status: Restock"
       ],
       "cited_fields": [
         {
@@ -469,6 +725,63 @@
         "disposition_assigned",
         "amazon_condition"
       ],
+      "claimability_score": 84,
+      "score_breakdown": {
+        "evidence_coverage": "9/25",
+        "rule_match": "20/20",
+        "timing_custody": "20/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "10/10",
+        "sla_window": "10/10"
+      },
+      "evidence_strength": "WEAK",
+      "priority_level": "NORMAL",
+      "adversarial_pass": true,
+      "adversarial_findings": [],
+      "why_not_claim": "",
+      "required_evidence_to_resolve": [],
+      "custody_window": {
+        "evidence_start": "2026-08-25T10:00:00Z",
+        "charge_posted": "2026-08-01",
+        "filing_deadline": "2026-11-14",
+        "precedes_charge": true,
+        "valid_custody": true
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-05",
+            "type": "charge",
+            "label": "Fee Charge: refund_issued_item_not_returned",
+            "amount": 0.0
+          },
+          {
+            "id": "unit-EVAL-U005",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U005"
+          },
+          {
+            "id": "returns-ERTN-005",
+            "type": "returns",
+            "label": "RETURNS (ERTN-005)",
+            "timestamp": "2026-08-25T10:00:00Z"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-05",
+            "to": "unit-EVAL-U005",
+            "label": "assigned_to"
+          },
+          {
+            "from": "unit-EVAL-U005",
+            "to": "returns-ERTN-005",
+            "label": "verified_identity_match"
+          }
+        ]
+      },
+      "sha256_hash": "81aa4b954750e4c07204b9da005e5a8f46dd63102992fd0191aa2ad1015e5cf7",
+      "root_cause_driver": "Customer Return Processing & Restock",
       "error": ""
     },
     {
@@ -480,7 +793,7 @@
       "verdict": "SILENT",
       "claim_amount": 0.0,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "SILENT: No upstream evidence found for this unit. Cannot support a claim.",
+      "reasoning": "No operational records found for this unit across receiving, prep, pack, or returns.",
       "supporting_evidence": [],
       "cited_fields": [],
       "sla": {
@@ -516,6 +829,56 @@
         "amazon_condition",
         "operator_disposition"
       ],
+      "claimability_score": 65,
+      "score_breakdown": {
+        "evidence_coverage": "0/25",
+        "rule_match": "20/20",
+        "timing_custody": "20/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "10/10",
+        "sla_window": "10/10"
+      },
+      "evidence_strength": "WEAK",
+      "priority_level": "LOW",
+      "adversarial_pass": false,
+      "adversarial_findings": [],
+      "why_not_claim": "No matching upstream records found for this unit prior to the fee charge date.",
+      "required_evidence_to_resolve": [
+        "Receiving intake inspection log",
+        "Prep completion record",
+        "Pack timestamp report"
+      ],
+      "custody_window": {
+        "evidence_start": "2026-08-01",
+        "charge_posted": "2026-08-01",
+        "filing_deadline": "2026-11-14",
+        "precedes_charge": true,
+        "valid_custody": true
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-06",
+            "type": "charge",
+            "label": "Fee Charge: refund_issued_item_not_returned",
+            "amount": 0.0
+          },
+          {
+            "id": "unit-EVAL-U006",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U006"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-06",
+            "to": "unit-EVAL-U006",
+            "label": "assigned_to"
+          }
+        ]
+      },
+      "sha256_hash": "7ab6455bde66cb38c1f6bab23d9041a213b86d79a1c2183290314b34166116cc",
+      "root_cause_driver": "Customer Return Processing & Restock",
       "error": ""
     },
     {
@@ -527,10 +890,10 @@
       "verdict": "CONTRADICTED",
       "claim_amount": 3.0,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "Prep records show compliant preparation. Inbound defect charge appears disputable.",
+      "reasoning": "Prep inspection logs confirm items were prepared fully in compliance with guidelines prior to intake.",
       "supporting_evidence": [
-        "fnsku_label_placement=flat",
-        "original_barcode_covered=yes"
+        "Fnsku label placement: Verified (flat)",
+        "Original barcode covered: Verified (yes)"
       ],
       "cited_fields": [
         {
@@ -611,6 +974,63 @@
         "expiry_date_legible",
         "handling_marks_present"
       ],
+      "claimability_score": 82,
+      "score_breakdown": {
+        "evidence_coverage": "7/25",
+        "rule_match": "20/20",
+        "timing_custody": "20/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "10/10",
+        "sla_window": "10/10"
+      },
+      "evidence_strength": "WEAK",
+      "priority_level": "NORMAL",
+      "adversarial_pass": true,
+      "adversarial_findings": [],
+      "why_not_claim": "",
+      "required_evidence_to_resolve": [],
+      "custody_window": {
+        "evidence_start": "2026-09-01T09:00:00Z",
+        "charge_posted": "2026-09-15",
+        "filing_deadline": "2026-11-14",
+        "precedes_charge": true,
+        "valid_custody": true
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-07A",
+            "type": "charge",
+            "label": "Fee Charge: inbound_defect_fee",
+            "amount": 3.0
+          },
+          {
+            "id": "unit-EVAL-U007",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U007"
+          },
+          {
+            "id": "prep-EPRP-007A",
+            "type": "prep",
+            "label": "PREP (EPRP-007A)",
+            "timestamp": "2026-09-01T09:00:00Z"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-07A",
+            "to": "unit-EVAL-U007",
+            "label": "assigned_to"
+          },
+          {
+            "from": "unit-EVAL-U007",
+            "to": "prep-EPRP-007A",
+            "label": "verified_polybag_present_sealed"
+          }
+        ]
+      },
+      "sha256_hash": "d65a562f9d67d5323e62f86ab729323f8f43bc6f00c915ff80c31dfe71eefb19",
+      "root_cause_driver": "Packaging & Polybag Compliance",
       "error": ""
     },
     {
@@ -622,10 +1042,10 @@
       "verdict": "CONTRADICTED",
       "claim_amount": 0.0,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "Prep records show compliant preparation. Inbound defect charge appears disputable.",
+      "reasoning": "Prep inspection logs confirm items were prepared fully in compliance with guidelines prior to intake.",
       "supporting_evidence": [
-        "fnsku_label_placement=flat",
-        "original_barcode_covered=yes"
+        "Fnsku label placement: Verified (flat)",
+        "Original barcode covered: Verified (yes)"
       ],
       "cited_fields": [
         {
@@ -706,6 +1126,65 @@
         "expiry_date_legible",
         "handling_marks_present"
       ],
+      "claimability_score": 72,
+      "score_breakdown": {
+        "evidence_coverage": "7/25",
+        "rule_match": "20/20",
+        "timing_custody": "20/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "0/10",
+        "sla_window": "10/10"
+      },
+      "evidence_strength": "WEAK",
+      "priority_level": "NORMAL",
+      "adversarial_pass": false,
+      "adversarial_findings": [
+        "Duplicate charge fingerprint detected."
+      ],
+      "why_not_claim": "",
+      "required_evidence_to_resolve": [],
+      "custody_window": {
+        "evidence_start": "2026-09-01T09:00:00Z",
+        "charge_posted": "2026-09-18",
+        "filing_deadline": "2026-11-17",
+        "precedes_charge": true,
+        "valid_custody": true
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-07B",
+            "type": "charge",
+            "label": "Fee Charge: inbound_defect_fee",
+            "amount": 3.0
+          },
+          {
+            "id": "unit-EVAL-U007",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U007"
+          },
+          {
+            "id": "prep-EPRP-007A",
+            "type": "prep",
+            "label": "PREP (EPRP-007A)",
+            "timestamp": "2026-09-01T09:00:00Z"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-07B",
+            "to": "unit-EVAL-U007",
+            "label": "assigned_to"
+          },
+          {
+            "from": "unit-EVAL-U007",
+            "to": "prep-EPRP-007A",
+            "label": "verified_polybag_present_sealed"
+          }
+        ]
+      },
+      "sha256_hash": "631c05ea313bba60117525413f34ea3f59f14da06888b9e9822d00730147499b",
+      "root_cause_driver": "Packaging & Polybag Compliance",
       "error": ""
     },
     {
@@ -717,12 +1196,12 @@
       "verdict": "UNCERTAIN",
       "claim_amount": 0.0,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "Prep records have uncertain values for: ['polybag_present_sealed', 'suffocation_warning', 'fnsku_label_placement', 'original_barcode_covered']. UNCERTAIN evidence cannot support a claim.",
+      "reasoning": "Prep inspection logs show unverified states for: polybag_present_sealed, suffocation_warning, fnsku_label_placement, original_barcode_covered. Further manual review required.",
       "supporting_evidence": [
-        "polybag_present_sealed=uncertain",
-        "suffocation_warning=uncertain",
-        "fnsku_label_placement=uncertain",
-        "original_barcode_covered=uncertain"
+        "Polybag present sealed: Uncertain",
+        "Suffocation warning: Uncertain",
+        "Fnsku label placement: Uncertain",
+        "Original barcode covered: Uncertain"
       ],
       "cited_fields": [],
       "sla": {
@@ -788,6 +1267,66 @@
         "expiry_date_legible",
         "handling_marks_present"
       ],
+      "claimability_score": 65,
+      "score_breakdown": {
+        "evidence_coverage": "7/25",
+        "rule_match": "20/20",
+        "timing_custody": "20/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "10/10",
+        "sla_window": "10/10"
+      },
+      "evidence_strength": "WEAK",
+      "priority_level": "LOW",
+      "adversarial_pass": false,
+      "adversarial_findings": [],
+      "why_not_claim": "Evidence exists but exhibits data gaps or unverified measurement fields.",
+      "required_evidence_to_resolve": [
+        "Scale physical weight measurement log",
+        "Warehouse photo confirmation"
+      ],
+      "custody_window": {
+        "evidence_start": "2026-09-05T10:00:00Z",
+        "charge_posted": "2026-09-20",
+        "filing_deadline": "2026-11-19",
+        "precedes_charge": true,
+        "valid_custody": true
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-08",
+            "type": "charge",
+            "label": "Fee Charge: inbound_defect_fee",
+            "amount": 1.0
+          },
+          {
+            "id": "unit-EVAL-U008",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U008"
+          },
+          {
+            "id": "prep-EPRP-008",
+            "type": "prep",
+            "label": "PREP (EPRP-008)",
+            "timestamp": "2026-09-05T10:00:00Z"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-08",
+            "to": "unit-EVAL-U008",
+            "label": "assigned_to"
+          },
+          {
+            "from": "unit-EVAL-U008",
+            "to": "prep-EPRP-008",
+            "label": "verified_polybag_present_sealed"
+          }
+        ]
+      },
+      "sha256_hash": "7d4005fdca1fc95b0666ccd80cc30aaf9464aec8aa7578a3a3fe506f6ca92532",
+      "root_cause_driver": "Packaging & Polybag Compliance",
       "error": ""
     },
     {
@@ -799,7 +1338,7 @@
       "verdict": "SILENT",
       "claim_amount": 0.0,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "SILENT: Evidence record captured_at postdates the charge posted_date; cannot prove condition prior to charge.",
+      "reasoning": "Operational evidence record postdates the fee charge date and cannot establish pre-charge condition.",
       "supporting_evidence": [],
       "cited_fields": [],
       "sla": {
@@ -847,6 +1386,78 @@
         "quality_flags",
         "identity_match"
       ],
+      "claimability_score": 65,
+      "score_breakdown": {
+        "evidence_coverage": "10/25",
+        "rule_match": "20/20",
+        "timing_custody": "5/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "10/10",
+        "sla_window": "10/10"
+      },
+      "evidence_strength": "MODERATE",
+      "priority_level": "LOW",
+      "adversarial_pass": false,
+      "adversarial_findings": [],
+      "why_not_claim": "No matching upstream records found for this unit prior to the fee charge date.",
+      "required_evidence_to_resolve": [
+        "Receiving intake inspection log",
+        "Prep completion record",
+        "Pack timestamp report"
+      ],
+      "custody_window": {
+        "evidence_start": "2026-09-05T10:00:00Z",
+        "charge_posted": "2026-09-05",
+        "filing_deadline": "2026-11-04",
+        "precedes_charge": false,
+        "valid_custody": false
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-09",
+            "type": "charge",
+            "label": "Fee Charge: damaged_in_warehouse",
+            "amount": 12.0
+          },
+          {
+            "id": "unit-EVAL-U009",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U009"
+          },
+          {
+            "id": "prep-EPRP-008",
+            "type": "prep",
+            "label": "PREP (EPRP-008)",
+            "timestamp": "2026-09-05T10:00:00Z"
+          },
+          {
+            "id": "prep-EPRP-010",
+            "type": "prep",
+            "label": "PREP (EPRP-010)",
+            "timestamp": "2026-09-10T08:00:00Z"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-09",
+            "to": "unit-EVAL-U009",
+            "label": "assigned_to"
+          },
+          {
+            "from": "unit-EVAL-U009",
+            "to": "prep-EPRP-008",
+            "label": "verified_polybag_present_sealed"
+          },
+          {
+            "from": "unit-EVAL-U009",
+            "to": "prep-EPRP-010",
+            "label": "verified_polybag_present_sealed"
+          }
+        ]
+      },
+      "sha256_hash": "83b632998dfc7378dfe28548c01314a245e6accf9975182d1495f3794edd12ab",
+      "root_cause_driver": "General Operational Dispute",
       "error": ""
     },
     {
@@ -858,15 +1469,31 @@
       "verdict": "UNCERTAIN",
       "claim_amount": 0.0,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "SKU confirmed via receiving spec fields ({'units_per_carton_counted': '12', 'spec_colour': 'n/a', 'spec_variant': '1kg', 'spec_components': 'tub;scoop', 'sku': 'SKU-PROT-1KG'}), but physical scale weight measurement is missing from records. Manual weight verification required.",
+      "reasoning": "SKU catalog specifications are verified, but physical scale weight measurement is absent from warehouse intake logs.",
       "supporting_evidence": [
-        "units_per_carton_counted=12",
-        "spec_colour=n/a",
-        "spec_variant=1kg",
-        "spec_components=tub;scoop",
-        "sku=SKU-PROT-1KG"
+        "Units per carton counted: 12",
+        "Spec variant: 1kg",
+        "Spec components: tub;scoop"
       ],
       "cited_fields": [
+        {
+          "source": "receiving",
+          "record_id": "ERCV-010",
+          "field": "cartons_ordered",
+          "value": "1"
+        },
+        {
+          "source": "receiving",
+          "record_id": "ERCV-010",
+          "field": "cartons_received",
+          "value": "1"
+        },
+        {
+          "source": "receiving",
+          "record_id": "ERCV-010",
+          "field": "units_per_carton_ordered",
+          "value": "12"
+        },
         {
           "source": "receiving",
           "record_id": "ERCV-010",
@@ -898,10 +1525,34 @@
           "value": "SKU-PROT-1KG"
         },
         {
+          "source": "receiving",
+          "record_id": "ERCV-010",
+          "field": "asin",
+          "value": "B0EVAL010"
+        },
+        {
+          "source": "receiving",
+          "record_id": "ERCV-010",
+          "field": "product_title",
+          "value": "Whey Protein"
+        },
+        {
           "source": "prep",
           "record_id": "EPRP-010",
           "field": "sku",
           "value": "SKU-PROT-1KG"
+        },
+        {
+          "source": "prep",
+          "record_id": "EPRP-010",
+          "field": "fnsku",
+          "value": "X00EVAL010"
+        },
+        {
+          "source": "prep",
+          "record_id": "EPRP-010",
+          "field": "fba_shipment_id",
+          "value": "FBA-EVAL-3"
         }
       ],
       "sla": {
@@ -1022,6 +1673,77 @@
       "missing_fields": [
         "quality_flags"
       ],
+      "claimability_score": 65,
+      "score_breakdown": {
+        "evidence_coverage": "25/25",
+        "rule_match": "20/20",
+        "timing_custody": "20/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "10/10",
+        "sla_window": "10/10"
+      },
+      "evidence_strength": "DIRECT",
+      "priority_level": "LOW",
+      "adversarial_pass": false,
+      "adversarial_findings": [],
+      "why_not_claim": "Evidence exists but exhibits data gaps or unverified measurement fields.",
+      "required_evidence_to_resolve": [
+        "Scale physical weight measurement log",
+        "Warehouse photo confirmation"
+      ],
+      "custody_window": {
+        "evidence_start": "2026-08-20T08:00:00Z",
+        "charge_posted": "2026-09-22",
+        "filing_deadline": "2026-12-21",
+        "precedes_charge": true,
+        "valid_custody": true
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-10",
+            "type": "charge",
+            "label": "Fee Charge: fulfilment_fee_weight_tier",
+            "amount": 5.1
+          },
+          {
+            "id": "unit-EVAL-U010",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U010"
+          },
+          {
+            "id": "receiving-ERCV-010",
+            "type": "receiving",
+            "label": "RECEIVING (ERCV-010)",
+            "timestamp": "2026-08-20T08:00:00Z"
+          },
+          {
+            "id": "prep-EPRP-010",
+            "type": "prep",
+            "label": "PREP (EPRP-010)",
+            "timestamp": "2026-09-10T08:00:00Z"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-10",
+            "to": "unit-EVAL-U010",
+            "label": "assigned_to"
+          },
+          {
+            "from": "unit-EVAL-U010",
+            "to": "receiving-ERCV-010",
+            "label": "verified_cartons_ordered"
+          },
+          {
+            "from": "unit-EVAL-U010",
+            "to": "prep-EPRP-010",
+            "label": "verified_sku"
+          }
+        ]
+      },
+      "sha256_hash": "0095e971548dd7c2feace224161759982cf85b3ed03d776e049c90fe08eddd86",
+      "root_cause_driver": "Catalog Dimension / Weight Tier Mismatch",
       "error": ""
     },
     {
@@ -1033,11 +1755,11 @@
       "verdict": "SILENT",
       "claim_amount": 0.0,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "[EXPIRED SLA / MISSED RECOVERABLE] Filing window expired on 2026-07-31 (SLA policy V2-Current). Prep records show compliant preparation. Inbound defect charge appears disputable.",
+      "reasoning": "Dispute filing window expired on 2026-07-31 under SLA policy V2-Current. Prep inspection logs confirm items were prepared fully in compliance with guidelines prior to intake.",
       "supporting_evidence": [
-        "polybag_present_sealed=yes",
-        "suffocation_warning=legible",
-        "fnsku_label_placement=flat"
+        "Polybag present sealed: Verified (yes)",
+        "Suffocation warning: Verified (legible)",
+        "Fnsku label placement: Verified (flat)"
       ],
       "cited_fields": [
         {
@@ -1136,6 +1858,78 @@
         "expiry_date_legible",
         "handling_marks_present"
       ],
+      "claimability_score": 65,
+      "score_breakdown": {
+        "evidence_coverage": "11/25",
+        "rule_match": "20/20",
+        "timing_custody": "20/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "10/10",
+        "sla_window": "0/10"
+      },
+      "evidence_strength": "MODERATE",
+      "priority_level": "LOW",
+      "adversarial_pass": false,
+      "adversarial_findings": [],
+      "why_not_claim": "No matching upstream records found for this unit prior to the fee charge date.",
+      "required_evidence_to_resolve": [
+        "Receiving intake inspection log",
+        "Prep completion record",
+        "Pack timestamp report"
+      ],
+      "custody_window": {
+        "evidence_start": "2026-04-15T08:00:00Z",
+        "charge_posted": "2026-06-01",
+        "filing_deadline": "2026-07-31",
+        "precedes_charge": true,
+        "valid_custody": true
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-11",
+            "type": "charge",
+            "label": "Fee Charge: inbound_defect_fee",
+            "amount": 2.0
+          },
+          {
+            "id": "unit-EVAL-U011",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U011"
+          },
+          {
+            "id": "prep-EPRP-011",
+            "type": "prep",
+            "label": "PREP (EPRP-011)",
+            "timestamp": "2026-04-15T08:00:00Z"
+          },
+          {
+            "id": "receiving-ERCV-011",
+            "type": "receiving",
+            "label": "RECEIVING (ERCV-011)",
+            "timestamp": "2026-05-01T08:00:00Z"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-11",
+            "to": "unit-EVAL-U011",
+            "label": "assigned_to"
+          },
+          {
+            "from": "unit-EVAL-U011",
+            "to": "prep-EPRP-011",
+            "label": "verified_polybag_present_sealed"
+          },
+          {
+            "from": "unit-EVAL-U011",
+            "to": "receiving-ERCV-011",
+            "label": "verified_carton_damage"
+          }
+        ]
+      },
+      "sha256_hash": "c75c59aca5a53d20ba7c9ddbc8c734e9239050df2d6b0d81bf3a0df9d69682a5",
+      "root_cause_driver": "Packaging & Polybag Compliance",
       "error": ""
     },
     {
@@ -1147,10 +1941,10 @@
       "verdict": "CONTRADICTED",
       "claim_amount": 10.0,
       "already_reimbursed_amount": 0.0,
-      "reasoning": "Receiving record shows qty_received=24 matching qty_ordered=24. Unit loss claim disputable.",
+      "reasoning": "Receiving intake records confirm all 24 ordered units arrived intact and fully accounted for. Inventory loss claim is disputable.",
       "supporting_evidence": [
-        "qty_ordered=24",
-        "qty_received=24"
+        "Ordered Quantity: 24",
+        "Received Quantity: 24"
       ],
       "cited_fields": [
         {
@@ -1229,6 +2023,74 @@
         "quantity_matches_po",
         "identity_matches_po"
       ],
+      "claimability_score": 95,
+      "score_breakdown": {
+        "evidence_coverage": "20/25",
+        "rule_match": "20/20",
+        "timing_custody": "20/20",
+        "entity_resolution": "15/15",
+        "duplicate_check": "10/10",
+        "sla_window": "10/10"
+      },
+      "evidence_strength": "DIRECT",
+      "priority_level": "NORMAL",
+      "adversarial_pass": true,
+      "adversarial_findings": [],
+      "why_not_claim": "",
+      "required_evidence_to_resolve": [],
+      "custody_window": {
+        "evidence_start": "2026-08-20T08:00:00Z",
+        "charge_posted": "2026-09-10",
+        "filing_deadline": "2026-11-09",
+        "precedes_charge": true,
+        "valid_custody": true
+      },
+      "evidence_graph": {
+        "nodes": [
+          {
+            "id": "charge-E-12",
+            "type": "charge",
+            "label": "Fee Charge: lost_inbound",
+            "amount": 0.0
+          },
+          {
+            "id": "unit-EVAL-U012",
+            "type": "unit",
+            "label": "Resolved Unit: EVAL-U012"
+          },
+          {
+            "id": "receiving-ERCV-012",
+            "type": "receiving",
+            "label": "RECEIVING (ERCV-012)",
+            "timestamp": "2026-08-25T08:00:00Z"
+          },
+          {
+            "id": "prep-EPRP-012",
+            "type": "prep",
+            "label": "PREP (EPRP-012)",
+            "timestamp": "2026-08-20T08:00:00Z"
+          }
+        ],
+        "edges": [
+          {
+            "from": "charge-E-12",
+            "to": "unit-EVAL-U012",
+            "label": "assigned_to"
+          },
+          {
+            "from": "unit-EVAL-U012",
+            "to": "receiving-ERCV-012",
+            "label": "verified_qty_ordered"
+          },
+          {
+            "from": "unit-EVAL-U012",
+            "to": "prep-EPRP-012",
+            "label": "verified_fba_shipment_id"
+          }
+        ]
+      },
+      "sha256_hash": "f9700e57cefeedf279f55c9d55cbc8dea77f7b4082267bcdf42e002fe9fb4fc2",
+      "root_cause_driver": "Inbound Receiving Discrepancy",
       "error": ""
     }
   ]

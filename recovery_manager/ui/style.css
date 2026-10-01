@@ -33,6 +33,13 @@
   --radius: 12px;
   --radius-sm: 8px;
   --sidebar-width: 220px;
+
+  /* Chart Colors (Light) */
+  --chart-contradicted: linear-gradient(90deg, #10b981, #059669);
+  --chart-supported: linear-gradient(90deg, #3b82f6, #2563eb);
+  --chart-silent: linear-gradient(90deg, #94a3b8, #64748b);
+  --chart-uncertain: linear-gradient(90deg, #f59e0b, #d97706);
+  --chart-pending: linear-gradient(90deg, #ef4444, #dc2626);
 }
 
 [data-theme="dark"] {
@@ -62,6 +69,13 @@
   --purple: #a29bfe;
   --purple-bg: rgba(162, 155, 254, 0.12);
   --muted-bg: rgba(100, 116, 139, 0.15);
+
+  /* Chart Colors (Dark) */
+  --chart-contradicted: linear-gradient(90deg, #00cec9, #00b894);
+  --chart-supported: linear-gradient(90deg, #525c7a, #3d4463);
+  --chart-silent: linear-gradient(90deg, #2d3250, #252a40);
+  --chart-uncertain: linear-gradient(90deg, #fdcb6e, #e1b12c);
+  --chart-pending: linear-gradient(90deg, rgba(225, 112, 85, 0.15), transparent);
 }
 
 * {
@@ -563,28 +577,28 @@ body {
 }
 
 .bar-contradicted {
-  background: linear-gradient(90deg, #00cec9, #00b894);
+  background: var(--chart-contradicted);
   color: #fff;
 }
 
 .bar-supported {
-  background: linear-gradient(90deg, #525c7a, #3d4463);
-  color: var(--text2);
+  background: var(--chart-supported);
+  color: #fff;
 }
 
 .bar-silent {
-  background: linear-gradient(90deg, #2d3250, #252a40);
-  color: var(--text3);
+  background: var(--chart-silent);
+  color: #fff;
 }
 
 .bar-uncertain {
-  background: linear-gradient(90deg, #b8860b, #fdcb6e66);
-  color: var(--amber);
+  background: var(--chart-uncertain);
+  color: #fff;
 }
 
 .bar-pending {
-  background: linear-gradient(90deg, var(--red-bg), transparent);
-  color: var(--red);
+  background: var(--chart-pending);
+  color: #fff;
 }
 
 .chart-bar-count {
@@ -1345,4 +1359,251 @@ body {
 .amount-claimable {
   color: var(--amber);
   font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HUMAN READABILITY & UX ENHANCEMENTS
+   ═══════════════════════════════════════════════════════════ */
+
+/* Structured Reasoning Box */
+.reasoning-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.reasoning-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.reasoning-badge.badge-contradicted {
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid rgba(13, 148, 136, 0.3);
+}
+
+.reasoning-badge.badge-uncertain {
+  background: var(--amber-bg);
+  color: var(--amber);
+  border: 1px solid rgba(217, 119, 6, 0.3);
+}
+
+.reasoning-badge.badge-temporal {
+  background: var(--purple-bg);
+  color: var(--purple);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+}
+
+.reasoning-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.comp-box {
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.comp-box.amazon {
+  background: var(--red-bg);
+  border: 1px solid rgba(224, 38, 78, 0.2);
+  color: var(--red);
+}
+
+.comp-box.evidence {
+  background: var(--green-bg);
+  border: 1px solid rgba(13, 148, 136, 0.2);
+  color: var(--green);
+}
+
+.comp-title {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+/* Modal Hero Stat Bar */
+.modal-hero-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.modal-hero-stat {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+}
+
+.modal-hero-val {
+  font-size: 20px;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+.modal-hero-lbl {
+  font-size: 11px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+/* Evidence DNA Node Cards */
+.dna-node-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.dna-node-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.dna-node-card:hover {
+  border-color: var(--accent);
+}
+
+.dna-node-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.dna-node-source {
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--accent2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dna-node-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.dna-node-field {
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.dna-node-val {
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Timeline enhancements */
+.timeline-list {
+  position: relative;
+  padding-left: 20px;
+  margin-top: 12px;
+}
+
+.timeline-list::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--border2);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -17px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent2);
+  border: 2px solid var(--bg2);
+}
+
+.timeline-item.item-charge::before {
+  background: var(--amber);
+}
+
+.timeline-item.item-good::before {
+  background: var(--green);
+}
+
+.timeline-content {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+
+/* Dispute text generator box */
+.dispute-box {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  white-space: pre-wrap;
+  user-select: all;
+  margin-top: 8px;
+  position: relative;
+}
+
+.copy-dispute-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.copy-dispute-btn:hover {
+  opacity: 0.9;
 }

@@ -200,6 +200,19 @@ def init_db_schema():
             );
         """)
 
+        # 7. Human Overrides Audit Log (USP #14 & USP #15)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS human_overrides (
+                id SERIAL PRIMARY KEY,
+                line_id VARCHAR(100),
+                engine_verdict VARCHAR(50),
+                human_override VARCHAR(50),
+                reviewer_id VARCHAR(100),
+                reason TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+
         conn.commit()
         cur.close()
         conn.close()
@@ -368,3 +381,24 @@ def save_claim_audit_logs(decisions: list[dict[str, Any]]):
         print(f"[DB Audit] Persisted {len(decisions)} claim audit decisions to PostgreSQL.")
     except Exception as e:
         print(f"[DB Audit Error] Failed to save claim logs: {e}")
+
+
+def save_human_override(line_id: str, engine_verdict: str, human_override: str, reviewer_id: str = "human_operator", reason: str = "") -> bool:
+    """Save an append-only human override audit log without mutating engine decisions."""
+    if not PSYCOPG2_AVAILABLE:
+        return False
+    try:
+        conn = get_pg_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO human_overrides (line_id, engine_verdict, human_override, reviewer_id, reason)
+            VALUES (%s, %s, %s, %s, %s);
+        """, (line_id, engine_verdict, human_override, reviewer_id, reason))
+        conn.commit()
+        cur.close()
+        conn.close()
+        print(f"[DB Override] Saved human override for {line_id}: {human_override}")
+        return True
+    except Exception as e:
+        print(f"[DB Override Error] Failed to save override: {e}")
+        return False

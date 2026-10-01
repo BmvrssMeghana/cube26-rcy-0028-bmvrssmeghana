@@ -130,7 +130,7 @@
         </div>
         <div class="card">
           <div class="card-header">
-            <h2>Top Claimable Charges</h2>
+            <h2>Top Priority Claims</h2>
           </div>
           <div class="top-claims-list" id="topClaimsList">
             <div class="empty-state">No data yet</div>
@@ -138,10 +138,33 @@
         </div>
       </div>
 
+      <!-- ── Root Cause & Run Delta Row (USP #9 & #10) ── -->
+      <div class="dashboard-grid" style="margin-top:1.5rem;">
+        <div class="card">
+          <div class="card-header">
+            <h2>Root Cause & Operational Intelligence</h2>
+            <span class="card-sub">Top Operational Leak Drivers</span>
+          </div>
+          <div style="padding:16px;" id="rootCauseBox">
+            <div class="empty-state" style="padding:10px">Run analysis to detect root causes</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h2>Run-to-Run Delta Intelligence</h2>
+            <span class="card-sub">Comparison vs Previous Analysis Run</span>
+          </div>
+          <div style="padding:16px;" id="runDeltaBox">
+            <div class="empty-state" style="padding:10px">Run multiple analyses to track recovery deltas</div>
+          </div>
+        </div>
+      </div>
+
       <div class="card" style="margin-top:1.5rem;">
         <div class="card-header">
           <h2>Recovery Manager Agentic Architecture</h2>
-          <span class="card-sub">Autonomous 10-Stage Pipeline: Accusation → Policy → Evidence → Monotonic Audit → Claim</span>
+          <span class="card-sub">Autonomous 10-Stage Pipeline: Accusation → Policy → Evidence → Monotonic Audit →
+            Claim</span>
         </div>
         <div class="chain-diagram">
           <div class="chain-step">
@@ -209,11 +232,12 @@
         <table class="data-table" id="chargesTable">
           <thead>
             <tr>
+              <th>Priority</th>
               <th>Line ID</th>
               <th>Unit ID</th>
               <th>Charge Type</th>
               <th>Amount</th>
-              <th>Posted</th>
+              <th>Score</th>
               <th>SLA Status</th>
               <th>Verdict</th>
               <th>Claim $</th>
@@ -312,7 +336,6 @@
             </div>
             <div class="upload-zone" id="zone-returns">
               <label for="file-returns">
-                <div class="upload-icon">↩️</div>
                 <div class="upload-label">Returns Records</div>
                 <div class="upload-hint">Optional · CSV</div>
                 <input type="file" id="file-returns" name="returns" accept=".csv"
