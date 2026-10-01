@@ -17,10 +17,5 @@
   ],
   "env": {
     "FLASK_DEBUG": "false"
-  },
-  "functions": {
-    "api/index.py": {
-      "maxDuration": 30
-    }
   }
 }
