@@ -74,7 +74,7 @@ async function loadOrgs() {
       opt.textContent = o;
       sel.appendChild(opt);
     });
-  } catch {}
+  } catch { }
 }
 
 function loadOrg() {
@@ -103,7 +103,7 @@ async function runAnalysis() {
 function applyResults(data) {
   state.decisions = data.decisions || [];
   state.metrics = data.metrics || {};
-  
+
   if (data.metrics && data.metrics.analysis_run_timestamp) {
     const badge = document.getElementById('runStampBadge');
     if (badge) badge.textContent = `Analysis run: ${data.metrics.analysis_run_timestamp}`;
@@ -187,7 +187,7 @@ function filterTable() {
 // ── Claims View (Triage Queue Section 4.5) ───────────────
 function renderClaimsView() {
   const claims = state.decisions.filter(d => d.verdict === 'CONTRADICTED');
-  
+
   // Section 4.5: Triage Queue Ranking by (amount / max(days_remaining, 1))
   claims.sort((a, b) => {
     const remA = Math.max(a.sla?.days_remaining || 30, 1);
@@ -248,9 +248,9 @@ function claimCard(d, priorityRank) {
 // ── Review Queue View (Section 2.6) ───────────────────────
 function renderReviewQueue() {
   const reviewItems = state.decisions.filter(d => ['UNCERTAIN', 'NOT_YET_SUPPORTED', 'PENDING_REVIEW'].includes(d.verdict));
-  
+
   const countEl = document.getElementById('reviewCount');
-  if (countEl) countEl.textContent = `${reviewItems.length} charge${reviewItems.length !== 1 ? 's' : ''} requiring human review & decision audit`;
+  if (countEl) countEl.textContent = `${reviewItems.length} charge${reviewItems.length !== 1 ? 's' : ''} requiring review & decision audit`;
 
   const tbody = document.getElementById('reviewBody');
   if (!tbody) return;

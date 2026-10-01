@@ -140,38 +140,44 @@
 
       <div class="card" style="margin-top:1.5rem;">
         <div class="card-header">
-          <h2>Evidence Chain</h2>
-          <span class="card-sub">How Recovery Manager reads the pipeline</span>
+          <h2>Recovery Manager Agentic Architecture</h2>
+          <span class="card-sub">Autonomous 10-Stage Pipeline: Accusation → Policy → Evidence → Monotonic Audit → Claim</span>
         </div>
         <div class="chain-diagram">
           <div class="chain-step">
-            <div class="chain-icon">📦</div>
-            <div class="chain-label">01 Receiving</div>
-            <div class="chain-desc">Identity · Quantity · Damage</div>
+            <div class="chain-icon">📄</div>
+            <div class="chain-label">01 Ingestion Agent</div>
+            <div class="chain-desc">Charges & Reimbursements</div>
           </div>
           <div class="chain-arrow">→</div>
           <div class="chain-step">
-            <div class="chain-icon">🏷️</div>
-            <div class="chain-label">02 Prep</div>
-            <div class="chain-desc">Polybag · FNSKU · Compliance</div>
+            <div class="chain-icon">📜</div>
+            <div class="chain-label">02 Policy RAG</div>
+            <div class="chain-desc">Time Machine & SLA</div>
           </div>
           <div class="chain-arrow">→</div>
           <div class="chain-step">
-            <div class="chain-icon">📫</div>
-            <div class="chain-label">03 Pack</div>
-            <div class="chain-desc">Contents · Verdict</div>
+            <div class="chain-icon">🔍</div>
+            <div class="chain-label">03 Retriever Agent</div>
+            <div class="chain-desc">Multi-Manager Entity Match</div>
           </div>
           <div class="chain-arrow">→</div>
           <div class="chain-step">
-            <div class="chain-icon">↩️</div>
-            <div class="chain-label">04 Returns</div>
-            <div class="chain-desc">Condition · Disposition</div>
+            <div class="chain-icon">⏱️</div>
+            <div class="chain-label">04 Verifier Agent</div>
+            <div class="chain-desc">Temporal Validity & Facts</div>
+          </div>
+          <div class="chain-arrow">→</div>
+          <div class="chain-step">
+            <div class="chain-icon">⚡</div>
+            <div class="chain-label">05 Classifier Agent</div>
+            <div class="chain-desc">4-State Verdict + Netting</div>
           </div>
           <div class="chain-arrow">→</div>
           <div class="chain-step active-step">
-            <div class="chain-icon">⚡</div>
-            <div class="chain-label">05 Recovery</div>
-            <div class="chain-desc">Claim · Evidence · Verdict</div>
+            <div class="chain-icon">🛡️</div>
+            <div class="chain-label">06 Integrity Auditor</div>
+            <div class="chain-desc">Monotonic Pass & Firewall</div>
           </div>
         </div>
       </div>
@@ -236,7 +242,7 @@
     <!-- ── Review Queue View (Section 2.6) ── -->
     <section class="view" id="view-review">
       <div class="claims-summary-bar">
-        <span id="reviewCount">0 charges require human review</span>
+        <span id="reviewCount">0 charges require review</span>
       </div>
       <div class="table-wrapper" style="margin-top:16px;">
         <table class="data-table" id="reviewTable">
@@ -253,7 +259,9 @@
             </tr>
           </thead>
           <tbody id="reviewBody">
-            <tr><td colspan="8" class="empty-cell">No items in review queue</td></tr>
+            <tr>
+              <td colspan="8" class="empty-cell">No items in review queue</td>
+            </tr>
           </tbody>
         </table>
       </div>
