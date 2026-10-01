@@ -40,6 +40,8 @@ VERSIONED_POLICIES: list[dict[str, Any]] = [
     }
 ]
 
+CLAIM_POLICY = VERSIONED_POLICIES[-1]["policies"]
+
 DEFAULT_POLICY = {
     "version": "V2-Current",
     "min_wait_days": 0,
