@@ -524,6 +524,9 @@
         <a class="nav-item" data-view="claims" onclick="showView('claims')">
           <span class="nav-icon">✦</span> Claims
         </a>
+        <a class="nav-item" data-view="evidence" onclick="showView('evidence')">
+          <span class="nav-icon">⌕</span> Evidence
+        </a>
         <a class="nav-item" data-view="review" onclick="showView('review')">
           <span class="nav-icon">⚖</span> Review Queue
         </a>
@@ -647,6 +650,14 @@
           </div>
         </div>
 
+        <div class="card evidence-chain-card">
+          <div class="card-header">
+            <h2>Evidence Chain</h2>
+            <span class="card-sub">Upstream manager evidence used by Recovery</span>
+          </div>
+          <div class="evidence-chain" id="evidenceChainStages"></div>
+        </div>
+
         <div class="card" style="margin-top:1.5rem;">
           <div class="card-header">
             <h2>AUDIX Agentic Architecture</h2>
@@ -740,12 +751,61 @@
 
       <!-- Claims View -->
       <section class="view" id="view-claims">
-        <div class="claims-summary-bar" id="claimsSummaryBar">
-          <span id="claimCount">— claims ready to file</span>
+        <div class="claims-toolbar">
+          <div class="claims-summary-bar" id="claimsSummaryBar">
+            <span id="claimCount">Run analysis to view charges</span>
+          </div>
+          <div class="claims-controls">
+            <div class="segmented-control" aria-label="Claims view">
+              <button class="active" data-claims-view="table" onclick="setClaimsView('table')">Table</button>
+              <button data-claims-view="board" onclick="setClaimsView('board')">Board</button>
+              <button data-claims-view="timeline" onclick="setClaimsView('timeline')">Timeline</button>
+            </div>
+            <select id="boardGrouping" class="filter-select" onchange="renderClaimsView()" aria-label="Board grouping">
+              <option value="source">By source manager</option>
+              <option value="sla">By SLA urgency</option>
+              <option value="defense">By defense outcome</option>
+            </select>
+            <select id="boardSourceFilter" class="filter-select" onchange="renderClaimsView()" aria-label="Filter by source manager" hidden>
+              <option value="">All source managers</option><option value="receiving">Receiving</option><option value="prep">Prep</option><option value="pack">Pack</option><option value="returns">Returns</option><option value="silent">No evidence (Silent)</option>
+            </select>
+          </div>
         </div>
-        <div class="claims-grid" id="claimsGrid">
-          <div class="empty-state">Run analysis to see recommended claims</div>
+        <div id="claimsTableView" class="claims-lens">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead><tr><th>Line ID</th><th>Charge</th><th>Amount</th><th>Unit ID</th><th>Evidence source</th><th>Verdict</th><th>SLA</th><th>Defense</th><th></th></tr></thead>
+              <tbody id="claimsTableBody"><tr><td colspan="9" class="empty-cell">Run analysis to load charges</td></tr></tbody>
+            </table>
+          </div>
         </div>
+        <div id="claimsBoardView" class="claims-lens" hidden>
+          <div class="evidence-board" id="claimsBoard"></div>
+        </div>
+        <div id="claimsTimelineView" class="claims-lens" hidden>
+          <div class="claims-timeline" id="claimsTimeline"></div>
+        </div>
+      </section>
+
+      <!-- Evidence Ledger View -->
+      <section class="view" id="view-evidence">
+        <div class="evidence-toolbar">
+          <input class="filter-input" id="evidenceSearch" type="search" placeholder="Search records, units, fields…" oninput="renderEvidenceLedger()" />
+          <select id="evidenceSourceFilter" class="filter-select" onchange="renderEvidenceLedger()">
+            <option value="">All managers</option><option value="receiving">Receiving</option><option value="prep">Prep</option><option value="pack">Pack</option><option value="returns">Returns</option>
+          </select>
+          <select id="evidenceUseFilter" class="filter-select" onchange="renderEvidenceLedger()">
+            <option value="">All utilization</option><option value="used">Cited by charges</option><option value="orphan">Orphaned</option>
+          </select>
+          <select id="evidenceIntegrityFilter" class="filter-select" onchange="renderEvidenceLedger()">
+            <option value="">All integrity</option><option value="verified">Hash verifies</option><option value="mismatch">Mismatch</option>
+          </select>
+          <select id="evidenceProvenanceFilter" class="filter-select" onchange="renderEvidenceLedger()">
+            <option value="">All provenance</option><option value="CSV Import">CSV Import</option><option value="API">API</option><option value="Manual Entry">Manual Entry</option>
+          </select>
+        </div>
+        <div class="evidence-ledger-summary" id="evidenceLedgerSummary"></div>
+        <div class="evidence-ledger-grid" id="evidenceLedgerGrid"><div class="empty-state">Run analysis to load evidence records</div></div>
       </section>
 
       <!-- Review Queue View -->

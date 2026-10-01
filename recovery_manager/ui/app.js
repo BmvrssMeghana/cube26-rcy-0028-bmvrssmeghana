@@ -3,8 +3,10 @@ const API = '/api';
 // ── State ────────────────────────────────────────────────
 let state = {
   decisions: [],
+  evidenceLedger: [],
   metrics: {},
   currentView: 'dashboard',
+  claimsLens: 'table',
 };
 
 // ── Init ─────────────────────────────────────────────────
@@ -129,6 +131,7 @@ function showView(name) {
     dashboard: 'Dashboard',
     charges: 'Charges',
     claims: 'Claims (Triage Queue)',
+    evidence: 'Evidence Ledger',
     review: 'Dedicated Review Queue',
     upload: 'Upload Reports',
     policy: 'SLA Policy Time Machine',
@@ -177,6 +180,7 @@ async function runAnalysis() {
 // ── Apply Results ────────────────────────────────────────
 function applyResults(data) {
   state.decisions = data.decisions || [];
+  state.evidenceLedger = data.evidence_ledger || [];
   state.metrics = data.metrics || {};
   state.delta = data.delta || {};
 
@@ -189,6 +193,8 @@ function applyResults(data) {
   renderRootCauseAndDelta(state.metrics, state.delta);
   renderChargesTable();
   renderClaimsView();
+  renderEvidenceLedger();
+  renderEvidenceChain();
   renderReviewQueue();
   renderVerdictChart();
   renderTopClaims();
@@ -318,28 +324,159 @@ function filterTable() {
 
 // ── Claims View (Triage Queue Section 4.5) ───────────────
 function renderClaimsView() {
-  const claims = state.decisions.filter(d => d.verdict === 'CONTRADICTED');
+  const total = state.decisions.reduce((sum, d) => sum + (d.claim_amount || 0), 0);
+  const count = document.getElementById('claimCount');
+  if (count) count.textContent = `${state.decisions.length} charges · $${total.toFixed(2)} claimable`;
 
-  // Section 4.5: Triage Queue Ranking by (amount / max(days_remaining, 1))
-  claims.sort((a, b) => {
-    const remA = Math.max(a.sla?.days_remaining || 30, 1);
-    const remB = Math.max(b.sla?.days_remaining || 30, 1);
-    const scoreA = (a.claim_amount || 0) / remA;
-    const scoreB = (b.claim_amount || 0) / remB;
-    return scoreB - scoreA;
+  const rows = state.decisions.map(d => `<tr>
+    <td>${esc(d.line_id)}</td><td>${chargeTypeLabel(d.charge_type)}</td>
+    <td class="amount-cell">$${(d.amount_usd || 0).toFixed(2)}</td><td>${esc(d.unit_id)}</td>
+    <td>${sourceLabel(decisionSource(d))}</td><td><span class="verdict-badge v-${esc(d.verdict)}">${esc(d.verdict)}</span></td>
+    <td>${slaChip(d)}</td><td>${defenseLabel(d)}</td>
+    <td><button class="detail-btn" onclick="openModal('${esc(d.line_id)}')">Evidence DNA</button></td>
+  </tr>`).join('');
+  document.getElementById('claimsTableBody').innerHTML = rows || '<tr><td colspan="9" class="empty-cell">Run analysis to load charges</td></tr>';
+
+  const grouping = document.getElementById('boardGrouping')?.value || 'source';
+  const sourceFilter = document.getElementById('boardSourceFilter')?.value || '';
+  const groups = grouping === 'sla'
+    ? [['Safe', d => slaGroup(d) === 'Safe'], ['Urgent', d => slaGroup(d) === 'Urgent'], ['Expired', d => slaGroup(d) === 'Expired']]
+    : grouping === 'defense'
+      ? [['Held', d => defenseGroup(d) === 'Held'], ['Downgraded', d => defenseGroup(d) === 'Downgraded'], ['Not yet reviewed', d => defenseGroup(d) === 'Not yet reviewed']]
+      : [['Receiving-sourced', d => decisionSource(d) === 'receiving'], ['Prep-sourced', d => decisionSource(d) === 'prep'], ['Pack-sourced', d => decisionSource(d) === 'pack'], ['Returns-sourced', d => decisionSource(d) === 'returns'], ['No evidence (Silent)', d => decisionSource(d) === 'silent']];
+  const board = document.getElementById('claimsBoard');
+  board.innerHTML = groups.map(([label, predicate]) => {
+    const cards = state.decisions.filter(d => predicate(d) && (!sourceFilter || decisionSource(d) === sourceFilter));
+    return `<section class="evidence-column"><header><strong>${label}</strong><span>${cards.length}</span></header>
+      <div class="evidence-column-cards">${cards.map(boardChargeCard).join('') || '<div class="empty-column">No charges</div>'}</div></section>`;
+  }).join('');
+
+  const timeline = [...state.decisions].sort((a, b) => String(b.sla?.posted_date || '').localeCompare(String(a.sla?.posted_date || '')));
+  document.getElementById('claimsTimeline').innerHTML = timeline.map(d => `<article class="claim-timeline-item">
+    <time>${esc((d.sla?.posted_date || '').slice(0, 10) || 'Date unavailable')}</time>
+    <div><strong>${esc(d.line_id)}</strong><span>${chargeTypeLabel(d.charge_type)} · ${esc(d.unit_id)}</span></div>
+    <span class="amount-cell">$${(d.amount_usd || 0).toFixed(2)}</span><span class="verdict-badge v-${esc(d.verdict)}">${esc(d.verdict)}</span>
+    <button class="detail-btn" onclick="openModal('${esc(d.line_id)}')">Evidence DNA</button>
+  </article>`).join('') || '<div class="empty-state">Run analysis to load charges</div>';
+  setClaimsView(state.claimsLens);
+}
+
+function setClaimsView(lens) {
+  state.claimsLens = lens;
+  ['table', 'board', 'timeline'].forEach(name => {
+    document.getElementById(`claims${name[0].toUpperCase()}${name.slice(1)}View`).hidden = name !== lens;
   });
+  document.querySelectorAll('[data-claims-view]').forEach(button => button.classList.toggle('active', button.dataset.claimsView === lens));
+  document.getElementById('boardGrouping').hidden = lens !== 'board';
+  document.getElementById('boardSourceFilter').hidden = lens !== 'board' || (document.getElementById('boardGrouping').value !== 'source');
+}
 
-  const total = claims.reduce((s, c) => s + (c.claim_amount || 0), 0);
+function decisionSource(decision) {
+  const counts = {};
+  for (const record of decision.evidence_dna_tree?.cited_records || []) {
+    const source = String(record.source || '').toLowerCase();
+    if (['receiving', 'prep', 'pack', 'returns'].includes(source)) counts[source] = (counts[source] || 0) + 1;
+  }
+  return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || 'silent';
+}
 
-  document.getElementById('claimCount').textContent =
-    `${claims.length} claim${claims.length !== 1 ? 's' : ''} in Triage Queue · Total Claimable: $${total.toFixed(2)}`;
+function sourceLabel(source) {
+  return ({ receiving: 'Receiving', prep: 'Prep', pack: 'Pack', returns: 'Returns', silent: 'No evidence (Silent)' })[source] || source;
+}
 
-  const grid = document.getElementById('claimsGrid');
-  if (!claims.length) {
-    grid.innerHTML = '<div class="empty-state">No CONTRADICTED claims in queue — all evidence supported or silent</div>';
+function slaGroup(decision) {
+  const days = Number(decision.sla?.days_remaining);
+  if (decision.sla?.status === 'expired' || days < 0) return 'Expired';
+  return days <= 15 || decision.sla?.status === 'min_wait' ? 'Urgent' : 'Safe';
+}
+
+function slaChip(decision) {
+  const group = slaGroup(decision);
+  return `<span class="sla-badge sla-${group.toLowerCase()}">${group}${Number.isFinite(Number(decision.sla?.days_remaining)) ? ` · ${decision.sla.days_remaining}d` : ''}</span>`;
+}
+
+function defenseGroup(decision) {
+  if (decision.adversarial_pass) return 'Held';
+  if ((decision.defense_pass_notes?.length && decision.verdict !== 'CONTRADICTED') || decision.adversarial_findings?.length) return 'Downgraded';
+  return 'Not yet reviewed';
+}
+
+function defenseLabel(decision) {
+  const group = defenseGroup(decision);
+  const text = group === 'Held' ? 'Defended' : group === 'Downgraded' ? 'Downgraded by defense' : 'Not yet reviewed';
+  return `<span class="defense-chip defense-${group.toLowerCase().replace(/\s+/g, '-')}">${text}</span>`;
+}
+
+function boardChargeCard(decision) {
+  return `<article class="evidence-charge-card" onclick="openModal('${esc(decision.line_id)}')" tabindex="0" role="button" aria-label="Open Evidence DNA for ${esc(decision.line_id)}">
+    <header><strong>${esc(decision.line_id)}</strong><b>$${(decision.amount_usd || 0).toFixed(2)}</b></header>
+    <div>${chargeTypeLabel(decision.charge_type)} · ${esc(decision.unit_id)}</div>
+    <div class="evidence-card-meta"><span class="verdict-badge v-${esc(decision.verdict)}">${esc(decision.verdict)}</span>${slaChip(decision)}</div>
+    ${defenseLabel(decision)}
+  </article>`;
+}
+
+function renderEvidenceChain() {
+  const sources = ['receiving', 'prep', 'pack', 'returns'];
+  const root = document.getElementById('evidenceChainStages');
+  if (!root) return;
+  root.innerHTML = sources.map(source => {
+    const count = state.decisions.filter(d => decisionSource(d) === source).length;
+    return `<button class="evidence-chain-stage" onclick="openSourceBoard('${source}')"><strong>${sourceLabel(source)}</strong><span>${count} sourced charges</span></button>`;
+  }).join('');
+}
+
+function openSourceBoard(source) {
+  showView('claims');
+  document.getElementById('boardGrouping').value = 'source';
+  document.getElementById('boardSourceFilter').value = source;
+  setClaimsView('board');
+  renderClaimsView();
+}
+
+function renderEvidenceLedger() {
+  const records = state.evidenceLedger || [];
+  const query = (document.getElementById('evidenceSearch')?.value || '').toLowerCase();
+  const source = document.getElementById('evidenceSourceFilter')?.value || '';
+  const use = document.getElementById('evidenceUseFilter')?.value || '';
+  const integrity = document.getElementById('evidenceIntegrityFilter')?.value || '';
+  const provenance = document.getElementById('evidenceProvenanceFilter')?.value || '';
+  const filtered = records.filter(record => {
+    const verified = String(record.integrity_status || '').toLowerCase().includes('verified');
+    return (!query || JSON.stringify(record).toLowerCase().includes(query))
+      && (!source || record.source === source)
+      && (!use || (use === 'orphan') === !!record.is_orphan)
+      && (!integrity || (integrity === 'verified') === verified)
+      && (!provenance || record.provenance === provenance);
+  });
+  document.getElementById('evidenceLedgerSummary').textContent = `${filtered.length} of ${records.length} records · ${records.filter(r => r.is_orphan).length} orphaned · ${records.filter(r => !r.is_orphan).length} cited`;
+  const grid = document.getElementById('evidenceLedgerGrid');
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-state">No matching evidence records</div>';
     return;
   }
-  grid.innerHTML = claims.map((d, i) => claimCard(d, i + 1)).join('');
+  grid.innerHTML = filtered.map(record => {
+    const index = records.indexOf(record);
+    const dataSummary = Object.entries(record.data || {}).filter(([key, value]) => value && !['operator_id', 'org_id'].includes(key)).slice(0, 5)
+      .map(([key, value]) => `<span><b>${esc(humanizeFieldName(key))}</b> ${esc(value)}</span>`).join('');
+    const ids = record.cited_by_charges || [];
+    const verified = String(record.integrity_status || '').toLowerCase().includes('verified');
+    return `<article class="evidence-record-card">
+      <header><div><span class="evidence-source-label">${sourceLabel(record.source)}</span><h3>${esc(record.record_id)}</h3></div><span class="${record.is_orphan ? 'orphan-flag' : 'utilized-flag'}">${record.is_orphan ? 'Orphaned' : `${record.utilization_count} charge${record.utilization_count === 1 ? '' : 's'}`}</span></header>
+      <div class="evidence-record-meta">Unit ${esc(record.unit_id)} · ${esc(record.captured_at || 'Timestamp unavailable')} · ${esc(record.provenance || 'Unknown provenance')}</div>
+      <div class="evidence-record-fields">${dataSummary}</div>
+      <div class="evidence-record-footer">
+        <button class="integrity-link ${verified ? 'integrity-ok' : 'integrity-bad'}" onclick="toggleEvidenceUses(${index})">${verified ? 'Hash verifies' : `Mismatch: ${esc(record.integrity_status || 'Integrity unknown')}`} · Used in ${ids.length} charges</button>
+        <code title="${esc(record.sha256_hash || '')}">${esc(record.sha256_hash || 'No hash')}</code>
+      </div>
+      <div class="evidence-use-links" id="evidence-uses-${index}" hidden>${ids.length ? ids.map(lineId => `<button onclick="event.stopPropagation();openModal('${esc(lineId)}')">${esc(lineId)} · Evidence DNA</button>`).join('') : '<span>Not cited by any charge</span>'}</div>
+    </article>`;
+  }).join('');
+}
+
+function toggleEvidenceUses(index) {
+  const el = document.getElementById(`evidence-uses-${index}`);
+  if (el) el.hidden = !el.hidden;
 }
 
 // ── Human Readability & Prettifier Helpers ──────────────────
