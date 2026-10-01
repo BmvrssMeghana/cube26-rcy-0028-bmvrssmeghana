@@ -217,5 +217,5 @@ Enforced by architecture: the Flask backend is the only process with access to `
 | Database | PostgreSQL (psycopg2) |
 | Frontend | Vanilla HTML/CSS/JS (SPA) |
 | LLM | Server-side only, API-key protected |
-| Deployment | Any WSGI host (Render, Railway, Cloud Run) |
+| Deployment | Vercel |
 | Audit | SHA-256 cryptographic hashing |
