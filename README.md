@@ -1,180 +1,386 @@
+```markdown
 # AUDIX — AI-Powered Recovery Intelligence
 
 > **Evidence-backed, rule-grounded, traceable decisions for Amazon FBA fee & reimbursement recovery.**
 
+AUDIX is an **agentic AI Recovery Manager** that analyzes Amazon fee and reimbursement charges against operational evidence and applicable policy rules to identify **defensible recovery opportunities**.
+
+The system connects financial charges with the documented product journey across **Receiving, Prep, Pack, and Returns**, while enforcing policy, filing-window, duplicate, and claim-value checks.
+
 ---
 
-## Problem Understanding
+## Problem
 
-Amazon FBA sellers routinely face erroneous charges — inbound receiving discrepancies, lost inventory, damaged goods, incorrect weight/dimension fees, and improper return dispositions. The scale of these charges is significant: mid-to-large sellers can lose tens of thousands of dollars annually to charges they never validate.
+Sellers and e-commerce operators receive fees, reimbursements, and financial adjustments that may appear long after the operational event that caused them.
 
-The core challenges are:
+By that point, the evidence needed to validate or dispute the charge may be distributed across multiple operational systems.
+
+This creates three core problems:
 
 | Challenge | Impact |
-|-----------|--------|
-| **No evidence linkage** | Charges are reviewed in isolation without cross-referencing upstream operational records |
-| **Policy complexity** | Amazon's reimbursement rules changed between V1 (pre-March 2025) and V2 (post-March 2025) — most tools apply one blindly |
-| **Manual bottleneck** | Human review of each charge is time-consuming, error-prone, and unscalable |
-| **Hallucinated claims** | AI-only systems fabricate justifications without verifiable evidence, creating legal and financial risk |
-| **No audit trail** | Decisions cannot be defended to Amazon without a traceable, documented evidence chain |
+|---|---|
+| **Charges are isolated** | Financial reports do not contain the operational context needed to validate a charge |
+| **Evidence is fragmented** | Receiving, preparation, packing, and return records are difficult to connect to individual charges |
+| **Policy is complex** | Eligibility, filing windows, and reimbursement rules vary by charge type and applicable policy version |
+| **Manual investigation** | Reviewing every charge against historical evidence does not scale |
+| **Unsupported AI claims** | AI systems can generate convincing explanations without actual supporting evidence |
+| **Poor traceability** | A recovery decision may not retain the evidence and rules used to reach it |
+
+The result is a difficult question:
+
+> **Is this charge actually defensible based on the rules and evidence available?**
 
 ---
 
-## Solution Overview
+## Solution
 
-**AUDIX** is an agentic AI recovery intelligence system that applies a deterministic, rule-grounded pipeline to every charge:
+AUDIX answers that question using a **rule-grounded, evidence-first agentic architecture**.
 
+```text
+RULES + EVIDENCE
+       ↓
+AGENTIC ANALYSIS
+       ↓
+VERIFIED DECISION
+       ↓
+CLAIM / DO NOT CLAIM / HUMAN REVIEW
 ```
-RULE + EVIDENCE → VERIFIABLE DECISION → CLAIM / DO NOT CLAIM / HUMAN REVIEW
+
+AUDIX does not optimize for the number of claims generated.
+
+It optimizes for **defensible recovery**.
+
+If evidence is missing, conflicting, or insufficient, AUDIX can explicitly return:
+
+```text
+SILENT — INSUFFICIENT EVIDENCE
 ```
 
-**Key design principle:** AUDIX never fabricates a claim. Every decision is traceable to:
-- The exact charge record
-- The applicable Amazon policy rule (V1 or V2, by date)
-- The upstream operational evidence (Receiving → Prep → Pack → Returns)
-- The specific evidence fields used
-- The custody window and time checks
-- A SHA-256 cryptographic audit hash
-
-### What AUDIX Does
-1. **Ingests** fee/reimbursement reports and upstream operational CSVs
-2. **Resolves** each charge to a unit identity (FNSKU, ASIN, shipment ID)
-3. **Selects** the correct policy version based on charge posted date
-4. **Retrieves** all relevant custody evidence across the 4 upstream stages
-5. **Scores** claimability (0–100) with priority classification (CRITICAL / HIGH / MEDIUM / LOW)
-6. **Generates** human-readable dispute language and claim packages
-7. **Routes** ambiguous cases to a dedicated human review queue
+rather than inventing a justification.
 
 ---
 
-## Setup Instructions
+## Key Capabilities
 
-### Prerequisites
-- Python 3.11+
-- PostgreSQL (local or managed: Neon, Supabase, Railway)
-
-### Installation
-
-```bash
-# 1. Clone
-git clone https://github.com/BmvrssMeghana/cube26-rcy-0028-bmvrssmeghana.git
-cd cube26-rcy-0028-bmvrssmeghana
-
-# 2. Install dependencies
-pip install -r requirements.txt
-
-# 3. Configure environment
-cp .env.example .env
-# Edit .env — set DATABASE_URL at minimum
-
-# 4. Start server
-python run.py
-```
-
-### Accessing the Application
-
-| URL | Description |
-|-----|-------------|
-| `http://localhost:5000/` | Public landing page |
-| `http://localhost:5000/app` | AUDIX workspace dashboard |
-| `http://localhost:5000/demo` | Interactive synthetic demo |
-| `http://localhost:5000/health` | Production health check |
+- Fee and reimbursement report ingestion
+- Charge parsing and normalization
+- Shipment / Order / SKU / Unit entity resolution
+- Policy and rule routing
+- Evidence retrieval across upstream operational records
+- Evidence validation and field-level citations
+- Contradiction and support analysis
+- SLA and filing-window validation
+- Duplicate and already-reimbursed detection
+- Claim amount validation
+- Claimability assessment
+- Self-critique of proposed recovery decisions
+- Human review routing
+- Evidence-backed claim package generation
+- Complete decision audit trail
+- Synthetic demo environment
 
 ---
 
-## Usage Instructions
+## Agentic Architecture
 
-### Option 1 — Upload CSVs via Dashboard
-1. Navigate to `http://localhost:5000/app`
-2. Go to **Upload** in the sidebar
-3. Upload your Fee/Reimbursement Report CSV + Upstream data CSVs
-4. Click **Run Analysis** — results appear in the dashboard
+![AUDIX Agentic Architecture](docs/architecture.png)
 
-### Option 2 — Use Sample Data
-1. Navigate to `http://localhost:5000/app`
-2. Click **Run Sample Analysis** from the dashboard
-3. AUDIX runs on pre-loaded sample data in `data/`
+AUDIX uses a **hybrid agentic + deterministic architecture**.
 
-### Option 3 — REST API
-```bash
-# Run analysis on sample data
-GET /api/run
+### Agentic Layer
 
-# Upload and analyze custom CSVs
-POST /api/upload  (multipart: fee_report, receiving, prep, pack, returns)
+| Agent | Responsibility |
+|---|---|
+| **Intake & Entity Agent** | Parses charges and resolves Unit, SKU, Shipment and Order relationships |
+| **Policy & Routing Agent** | Determines the applicable policy and evaluation scope |
+| **Evidence Agent** | Retrieves, validates and compares relevant operational evidence |
+| **Recovery Decision Agent** | Reasons over evidence, policy and recovery conditions |
+| **Review & Critique Agent** | Challenges weak decisions and routes ambiguous cases for human review |
 
-# Get charge detail
-GET /api/charge/<charge_id>
+### Deterministic Trust Layer
 
-# Get claim package
-GET /api/claim-package/<charge_id>
+Critical financial and policy operations are enforced deterministically:
 
-# Submit human override
-POST /api/review  { charge_id, decision, notes }
-```
+- Policy rules
+- SLA / filing windows
+- Claim amounts
+- Duplicate checks
+- Reimbursement checks
+- Evidence references
+- Decision integrity
+- Audit records
 
-### Reading Results
+The design deliberately separates:
 
-Each charge gets a **Verdict**:
+> **AI for reasoning from deterministic logic for financial and policy correctness.**
+
+---
+
+## Evidence Foundation
+
+AUDIX consumes evidence generated throughout the product lifecycle:
+
+- **Receiving Records**
+- **Prep Records**
+- **Pack Records**
+- **Returns Records**
+
+A charge is therefore evaluated against the operational evidence associated with the relevant unit, SKU, shipment, or order rather than being analyzed in isolation.
+
+---
+
+## Decision Model
+
+Every charge receives a structured outcome.
+
 | Verdict | Meaning |
-|---------|---------|
-| `Supported (Legit)` | Amazon charged correctly — do not dispute |
-| `Contradicted (Claim)` | Evidence directly contradicts the charge — file claim |
-| `Silent (No Evidence)` | No upstream evidence found — risky to claim |
-| `Uncertain (Review)` | Conflicting signals — needs human review |
-| `Duplicate Suppressed` | Claim already filed for this charge |
+|---|---|
+| **CONTRADICTED** | Available evidence conflicts with the reason for the charge |
+| **SUPPORTED** | Available evidence supports the charge |
+| **SILENT** | No sufficient evidence exists to establish a defensible claim |
+| **UNCERTAIN** | Evidence or applicable conditions are ambiguous or conflicting |
+| **DUPLICATE SUPPRESSED** | A matching claim or reimbursement has already been identified |
 
-Each result includes a **Claimability Score** (0–100) and **Priority Level** to help prioritize which claims to file first.
+A claim is not generated merely because a charge exists.
 
 ---
 
-## Assumptions & Limitations
+## Example
 
-### Assumptions
-- Input CSVs follow the Amazon Seller Central export schema (or the upstream operational format used by the connected warehouse/3PL system)
-- Charge posted dates are used to determine policy version (V1: before March 10, 2025 / V2: on or after March 10, 2025)
-- FNSKU or shipment_id is used as the primary linking key between fee reports and upstream records
-- The `data/upstream/` directory contains Receiving, Prep, Pack, and Returns CSVs
+### Charge
 
-### Limitations
-- AUDIX does not submit claims to Amazon directly — it generates the dispute language and claim package for human submission
-- AUDIX does not have access to real-time Amazon Seller Central data; it operates on exported reports
-- The LLM component (for human-readable reasoning generation) requires a valid API key configured server-side
-- Multi-org isolation is implemented but full authentication (login/signup) is scaffolded for demo purposes; production deployment requires completing the auth flow
-- The demo mode uses synthetic data and does not reflect live Amazon data
+```text
+Charge ID: TC-01
+Unit: U-TEST-01
+Charge Type: Inbound Defect Fee
+Amount: $2.50
+```
+
+### Evidence
+
+```text
+Prep Record: PRP-01
+
+polybag_present_sealed = yes
+suffocation_warning = legible
+fnsku_label_placement = flat
+```
+
+### AUDIX Result
+
+```text
+VERDICT: CONTRADICTED
+
+Potential Claim: $2.50
+
+Reason:
+Available preparation evidence indicates that the
+required preparation conditions were satisfied.
+
+Evidence:
+PRP-01
+```
+
+The resulting decision retains the connection between the **charge, rule, evidence, and outcome**.
+
+---
+
+## Traceability
+
+Every decision is designed to retain:
+
+- Charge identifier
+- Resolved entity information
+- Applicable policy/rule
+- Policy version
+- Evidence records
+- Evidence fields used
+- Evidence timestamps
+- Filing-window information
+- Claim amount
+- Decision
+- Analysis run
+- Audit information
+
+AUDIX can therefore answer:
+
+> **What was charged?**
+
+> **Which rule was applied?**
+
+> **What evidence was used?**
+
+> **Why was the charge considered claimable or not?**
+
+---
+
+## Safety & Decision Integrity
+
+AUDIX follows a strict evidence policy:
+
+**No invented evidence.**
+
+**No unsupported claims.**
+
+**No forced conclusions.**
+
+**No automatic claim when evidence is insufficient.**
+
+When evidence does not support a conclusion, the system preserves uncertainty and routes the case for review where appropriate.
 
 ---
 
 ## Project Structure
 
-```
+```text
 cube26-rcy-0028-bmvrssmeghana/
-├── run.py                          # Entry point
+│
+├── run.py
 ├── requirements.txt
-├── .env.example                    # Environment configuration template
+├── .env.example
 ├── README.md
 ├── ARCHITECTURE.md
+│
 ├── data/
-│   ├── fee_report.csv              # Sample Amazon fee report
+│   ├── fee_report.csv
 │   └── upstream/
 │       ├── receiving.csv
 │       ├── prep.csv
 │       ├── pack.csv
 │       └── returns.csv
+│
 └── recovery_manager/
+    │
     ├── api/
-    │   └── app.py                  # Flask API + UI routes
+    │   └── app.py
+    │
     ├── engine/
-    │   ├── runner.py               # End-to-end orchestration
-    │   ├── ingestor.py             # CSV parsing + normalization
-    │   ├── evidence_matcher.py     # Upstream entity resolution
-    │   ├── sla_engine.py           # Policy Time Machine (V1/V2)
-    │   └── classifier.py          # Claimability scoring
+    │   ├── runner.py
+    │   ├── ingestor.py
+    │   ├── evidence_matcher.py
+    │   ├── sla_engine.py
+    │   └── classifier.py
+    │
     ├── db/
-    │   └── database.py             # PostgreSQL schema + queries
+    │   └── database.py
+    │
     └── ui/
-        ├── index.html              # SPA shell
-        ├── app.js                  # Client-side routing + UI logic
-        ├── style.css               # Design system + component styles
-        └── logo.svg                # Brand asset
+        ├── index.html
+        ├── app.js
+        ├── style.css
+        └── logo.svg
+```
+
+---
+
+## Setup
+
+### Requirements
+
+- Python 3.11+
+- PostgreSQL
+- Valid LLM API key for AI-generated reasoning
+
+### Installation
+
+```bash
+git clone https://github.com/BmvrssMeghana/cube26-rcy-0028-bmvrssmeghana.git
+
+cd cube26-rcy-0028-bmvrssmeghana
+
+pip install -r requirements.txt
+
+cp .env.example .env
+```
+
+Configure the required environment variables in `.env`.
+
+Then start AUDIX:
+
+```bash
+python run.py
+```
+
+---
+
+## Application
+
+| URL | Purpose |
+|---|---|
+| `/` | Public AUDIX landing page |
+| `/app` | AUDIX recovery workspace |
+| `/demo` | Synthetic interactive demonstration |
+| `/health` | Application health check |
+
+---
+
+## Using AUDIX
+
+### Upload Analysis
+
+From the AUDIX workspace:
+
+1. Upload the Fee / Reimbursement Report.
+2. Upload available Receiving, Prep, Pack and Returns records.
+3. Run the analysis.
+4. Review the resulting decisions.
+5. Open individual charges to inspect evidence, policy and reasoning.
+6. Generate a claim package where applicable.
+
+### Sample Analysis
+
+AUDIX also provides sample data for demonstrating the complete recovery pipeline without requiring real seller data.
+
+### REST API
+
+```text
+GET  /api/run
+POST /api/upload
+GET  /api/charge/<charge_id>
+GET  /api/claim-package/<charge_id>
+POST /api/review
+```
+
+---
+
+## Security & Data Handling
+
+AUDIX is designed so that LLM API credentials remain server-side.
+
+Sensitive configuration is supplied through environment variables rather than committed to source code.
+
+The public demo uses synthetic data and does not expose real seller records.
+
+For production deployment, authentication, organisation-level access control, persistent file storage, and additional infrastructure hardening should be enabled according to the deployment environment.
+
+---
+
+## Limitations
+
+- AUDIX operates on exported reports and supplied operational records; it does not directly access Amazon Seller Central.
+- AUDIX generates evidence-backed claim packages but does not directly submit claims to Amazon.
+- The quality of recovery decisions depends on the completeness and correctness of available operational evidence.
+- Ambiguous cases may require human review.
+- LLM-generated explanations require a configured server-side API provider.
+- The included demo uses synthetic data.
+
+---
+
+## Design Philosophy
+
+AUDIX is built around a simple principle:
+
+> **A recovery claim is only as strong as the evidence and rules supporting it.**
+
+Rather than treating an LLM response as the final authority, AUDIX combines:
+
+**Policy + Evidence + Deterministic Validation + Agentic Reasoning + Human Review**
+
+to produce recovery decisions that are **defensible, traceable, and explainable**.
+
+---
+
+## License
+
+This project is developed as part of the Cube Hackathon.
 ```
